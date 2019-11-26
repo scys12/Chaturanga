@@ -8,6 +8,8 @@ public abstract class Move1 {
     final Piece1 movedPiece;
     final int destinationCoordinate;
 
+    public static final Move1 NULL_MOVE = new NullMove();
+
     public Move1(final Board1 board, final Piece1 movedPiece, final int destinationCoordinate) {
         this.board = board;
         this.movedPiece = movedPiece;
@@ -16,6 +18,10 @@ public abstract class Move1 {
 
     public int getDestinationCoordinate() {
         return this.destinationCoordinate;
+    }
+
+    public int getCurrentCoordinate(){
+        return this.getMovedPiece().getPiecePosition();
     }
 
     public Piece1 getMovedPiece() {
@@ -50,11 +56,44 @@ public abstract class Move1 {
 
         public JumpedMove(final Board1 board, final Piece1 movedPiece, final int destinationCoordinate, final Piece1 jumpedPiece) {
             super(board, movedPiece, destinationCoordinate);
-            this.jumpedPiece = jumpedPiece
+            this.jumpedPiece = jumpedPiece;
         }
 
         public Board1 execute() {
             return null;
+        }
+    }
+
+    public static final class PawnMove extends Move1{
+        public PawnMove(final Board1 board1, final Piece1 movePiece, final int destinationCoordinate){
+            super(board1, movePiece, destinationCoordinate);
+        }
+    }
+
+    public static final class NullMove extends Move1{
+        public NullMove(){
+            super(null, null, -1);
+        }
+        @Override
+        public Board1 execute(){
+            throw new RuntimeException("Cannot Execute the Null Move");
+        }
+    }
+
+    public static class MoveFactory{
+
+        private MoveFactory(){
+            throw new RuntimeException("Not instantiable!");
+        }
+
+        public static Move1 createMove(final Board1 board1, final int currentCoordinate, final int destinationCoordinate){
+            for (final Move1 move1 : board1.getAllLegalMoves()){
+                if (move1.getCurrentCoordinate() == currentCoordinate &&
+                    move1.getDestinationCoordinate() == destinationCoordinate){
+                    return move1;
+                }
+            }
+            return NULL_MOVE;
         }
     }
 

@@ -10,6 +10,7 @@ import chaturanga.player.MoveTransition1;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -17,6 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class Table {
     private final JFrame gameFrame;
@@ -60,6 +64,16 @@ public class Table {
             setPreferredSize(BOARD_PANEL_DIMENSION);
             validate();
         }
+
+        public void drawBoard(final Board1 board1){
+            removeAll();
+            for(final TilePanel tilePanel : boardTiles){
+//                TilePanel.drawTile(board1);
+                add(tilePanel);
+            }
+            validate();
+            repaint();
+        }
     }
 
     private class TilePanel extends JPanel {
@@ -72,52 +86,66 @@ public class Table {
             assignTileColor();
             assignTilePieceIcon(chessBoard);
 
-            /*addMouseListener(new MouseListener() {
+            addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
 
-                    if (isRightMouseButton(event)) {
+                    if (isRightMouseButton(e)) {
+                        sourceTile = null;
+                        destinationTile = null;
+                        humanMovedPiece = null;
+                    } else if (isLeftMouseButton(e)) {
                         if (sourceTile == null) {
-                            //firstclick
                             sourceTile = chessBoard.getTile(tileId);
                             humanMovedPiece = sourceTile.getPiece();
                             if (humanMovedPiece == null) {
                                 sourceTile = null;
                             }
                         } else {
-                            //second click
                             destinationTile = chessBoard.getTile(tileId);
-                            final Move1 move = null;
-                            final MoveTransition1 transition = chessBoard.currentPlayer().makeMove(move);
+                            final Move1 move1 = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+                            sourceTile = null;
+                            destinationTile = null;
+                            humanMovedPiece = null;
                         }
-                    } else if (isLeftMouseButton(event)) {
-                        return null;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                boardPanel.drawBoard(chessBoard);
+                            }
+                        });
                     }
+                }
+                @Override
+                public void mousePressed(MouseEvent e) {
 
                 }
 
                 @Override
-                public void mousePressed(final MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
 
                 }
 
                 @Override
-                public void mouseReleased(final MouseEvent e) {
+                public void mouseEntered(MouseEvent e) {
 
                 }
 
                 @Override
-                public void mouseEntered(final MouseEvent e) {
+                public void mouseExited(MouseEvent e) {
 
                 }
 
-                @Override
-                public void mouseExited(final MouseEvent e) {
-
-                }
-            });*/
+            });
 
             validate();
+        }
+
+        public void drawTile(final Board1 board1){
+            assignTileColor();
+            assignTilePieceIcon(board1);
+            validate();
+            repaint();
         }
 
         private void assignTilePieceIcon(final Board1 board) {

@@ -10,12 +10,14 @@ public abstract class Piece1 {
     protected final PieceType pieceType;
     protected final int piecePosition;
     protected final Alliance1 pieceAlliance;
-    private final int cachedHashCode;
+    protected final int cachedHashCode;
+    protected final boolean isFirstMove;
 
-    Piece1(final PieceType pieceType,final int piecePosition, final Alliance1 pieceAlliance) {
+    Piece1(final PieceType pieceType, final int piecePosition, final Alliance1 pieceAlliance) {
         this.piecePosition = piecePosition;
         this.pieceAlliance = pieceAlliance;
         this.pieceType = pieceType;
+        this.isFirstMove = false;
         this.cachedHashCode = computeHashCode();
     }
 
@@ -36,8 +38,8 @@ public abstract class Piece1 {
             return false;
         }
         final Piece1 otherPiece = (Piece1) other;
-        return piecePosition == otherPiece.getPiecePosition() && pieceType == ((Piece1) other).getPieceType() &&
-                pieceAlliance == otherPiece.getPieceAlliance() && isFirstMove == other.isFirstMove;
+        return piecePosition == otherPiece.getPiecePosition() && pieceType == otherPiece.getPieceType() &&
+                pieceAlliance == otherPiece.getPieceAlliance() && isFirstMove == otherPiece.isFirstMove;
     }
 
     @Override

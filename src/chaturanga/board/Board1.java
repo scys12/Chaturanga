@@ -7,6 +7,7 @@ import chaturanga.player.BlackPlayer1;
 import chaturanga.player.Player1;
 import chaturanga.player.WhitePlayer1;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.util.*;
 
@@ -123,6 +124,10 @@ public class Board1 {
         builder.setMoveMaker(Alliance1.WHITE);
         //white to move
         return builder.build();
+    }
+
+    public Iterable<Move1> getAllLegalMoves() {
+        return Iterables.unmodifiableIterable(Iterables.concat(this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
     }
 
     public static class Builder {

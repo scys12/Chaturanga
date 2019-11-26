@@ -43,4 +43,8 @@ public abstract class Player1 {
     public abstract Collection<Piece1> getActivePieces();
     public abstract Alliance1 getAlliance();
     public abstract Player1 getOpponent();
+    public Collection<Move1> getLegalMoves()  {
+        return this.legalMoves;
+    }
+
 }
