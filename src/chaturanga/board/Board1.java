@@ -12,14 +12,15 @@ import java.util.*;
 
 public class Board1 {
 
-    private final List<Tile1> gameBoard;
+    private final List<Tile1> gameBoard;//you cant really have an immutable array in Java but you can have an immutable list
     private final Collection<Piece1> whitePieces;
     private final Collection<Piece1> blackPieces;
 
     private final WhitePlayer1 whitePlayer;
     private final BlackPlayer1 blackPlayer;
+    private final Player1 currentPlayer;
 
-    public Board1(Builder builder) {
+    public Board1(final Builder builder) {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance1.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance1.BLACK);
@@ -29,6 +30,7 @@ public class Board1 {
 
         this.whitePlayer = new WhitePlayer1(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer1(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
 
     @Override
@@ -56,10 +58,13 @@ public class Board1 {
         return this.blackPieces;
     }
 
+    public Player1 currentPlayer() {
+        return this.currentPlayer;
+    }
+
     public Collection<Piece1> getWhitePieces() {
         return this.whitePieces;
     }
-
     public Collection<Move1> calculateLegalMoves(final Collection<Piece1> pieces) {
         final List<Move1> legalMoves = new ArrayList<>();
 
@@ -115,14 +120,14 @@ public class Board1 {
         builder.setPiece(new Pawn1(Alliance1.WHITE, 29));
         builder.setPiece(new Pawn1(Alliance1.WHITE, 30));
         builder.setPiece(new Pawn1(Alliance1.WHITE, 31));
-
+        builder.setMoveMaker(Alliance1.WHITE);
         //white to move
         return builder.build();
     }
 
     public static class Builder {
-        Map<Integer, Piece1> boardConfig;
-        Alliance1 nextMoveMaker;
+        Map<Integer, Piece1> boardConfig;//untuk ngemap tile ID dari chess board ke piece2
+        Alliance1 nextMoveMaker;//track person whose turn to move
 
         public Builder() {
             this.boardConfig = new HashMap<>();

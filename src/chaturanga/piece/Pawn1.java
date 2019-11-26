@@ -1,10 +1,12 @@
 package chaturanga.piece;
 
 import chaturanga.Alliance1;
-import chaturanga.board.*;
+import chaturanga.board.Board1;
+import chaturanga.board.BoardUtils1;
+import chaturanga.board.Move1;
 import chaturanga.board.Move1.MajorMove;
+import chaturanga.board.Tile1;
 import com.google.common.collect.ImmutableList;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +42,11 @@ public class Pawn1 extends Piece1 {
             }
         }
         return ImmutableList.copyOf(legalMoves);
+    }
+
+    @Override
+    public Pawn1 movePiece(Move1 move) {
+        return new Pawn1(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
     }
 
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {

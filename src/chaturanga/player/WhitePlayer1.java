@@ -26,6 +26,4 @@ public class WhitePlayer1 extends Player1 {
     public Player1 getOpponent() {
         return this.board.blackPlayer();
     }
-
-
 }

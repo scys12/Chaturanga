@@ -20,5 +20,5 @@ public enum MoveStatus1 {
         }
     };
 
-    abstract boolean isDone();
+    abstract boolean isDone();//untuk ngecek checkmate catur 8x8 jadi tidak dipake
 }
