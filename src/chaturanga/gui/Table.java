@@ -4,6 +4,7 @@ import chaturanga.board.Board1;
 import chaturanga.board.BoardUtils1;
 import chaturanga.board.Move1;
 import chaturanga.board.Tile1;
+import chaturanga.menu.PlayState;
 import chaturanga.piece.Piece1;
 import chaturanga.player.MoveTransition1;
 
@@ -13,6 +14,7 @@ import java.awt.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,9 +42,30 @@ public class Table {
     private final Color lightTileColor = Color.decode("#FFFACD");
     private final Color darkTileColor = Color.decode("#593E1A");
 
+    private enum STATE{
+        MENU,
+        GAME,
+    };
+
+    private STATE state = STATE.MENU;
+
     public Table() {
+
         this.gameFrame = new JFrame("Chaturanga");
         this.gameFrame.setLayout(new BorderLayout());
+        this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
+        this.gameFrame.setVisible(true);
+        this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        if (state == STATE.GAME) {
+            initTable();
+        }else {
+            this.playState = new PlayState();
+        }
+    }
+
+
+
+    private void initTable() {
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.chessBoard = Board1.createStandardBoard();
         this.boardPanel = new BoardPanel();
