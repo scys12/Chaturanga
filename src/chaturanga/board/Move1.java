@@ -72,7 +72,7 @@ public abstract class Move1 {
 
     public static final class NullMove extends Move1{
         public NullMove(){
-            super(null, null, -1);
+            super(null, null,  -1);
         }
         @Override
         public Board1 execute(){

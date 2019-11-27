@@ -25,7 +25,7 @@ public abstract class Piece1 {
         int result = pieceType.hashCode();
         result = 31 * result + pieceAlliance.hashCode();
         result = 31 * result + piecePosition;
-        //result = 31 * result + (isFirstMove ? 1 : 0);
+        result = 31 * result + (isFirstMove ? 1 : 0);
         return result;
     }
 
@@ -47,7 +47,7 @@ public abstract class Piece1 {
         int result = pieceType.hashCode();
         result = 31 * result + pieceAlliance.hashCode();
         result = 31 * result + piecePosition;
-        //result = 31 * result + (isFirstMove ? 1 : 0);
+        result = 31 * result + (isFirstMove ? 1 : 0);
         return result;
     }
 
@@ -65,7 +65,7 @@ public abstract class Piece1 {
 
     public abstract Collection<Move1> calculateLegalMoves (final Board1 board);
 
-    public abstract Piece1 movePiece(Move1 move);
+    public abstract Piece1 movePiece(Move1 move);//return a new piece that will update to move to its destination
 
     public enum PieceType {
 

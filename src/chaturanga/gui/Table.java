@@ -4,7 +4,6 @@ import chaturanga.board.Board1;
 import chaturanga.board.BoardUtils1;
 import chaturanga.board.Move1;
 import chaturanga.board.Tile1;
-import chaturanga.menu.PlayState;
 import chaturanga.piece.Piece1;
 import chaturanga.player.MoveTransition1;
 
@@ -14,7 +13,6 @@ import java.awt.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +25,7 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public class Table {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
-    private final Board1 chessBoard;
+    private Board1 chessBoard;
 
     private Tile1 sourceTile;
     private Tile1 destinationTile;
@@ -42,35 +40,17 @@ public class Table {
     private final Color lightTileColor = Color.decode("#FFFACD");
     private final Color darkTileColor = Color.decode("#593E1A");
 
-    private enum STATE{
-        MENU,
-        GAME,
-    };
-
-    private STATE state = STATE.MENU;
-
     public Table() {
 
         this.gameFrame = new JFrame("Chaturanga");
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
-        this.gameFrame.setVisible(true);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        if (state == STATE.GAME) {
-            initTable();
-        }else {
-            this.playState = new PlayState();
-        }
-    }
-
-
-
-    private void initTable() {
-        this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.chessBoard = Board1.createStandardBoard();
         this.boardPanel = new BoardPanel();
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setVisible(true);
+
     }
 
     private class BoardPanel extends JPanel {
@@ -86,12 +66,13 @@ public class Table {
             }
             setPreferredSize(BOARD_PANEL_DIMENSION);
             validate();
+
         }
 
         public void drawBoard(final Board1 board1){
             removeAll();
             for(final TilePanel tilePanel : boardTiles){
-//                TilePanel.drawTile(board1);
+                tilePanel.drawTile(board1);
                 add(tilePanel);
             }
             validate();
@@ -112,12 +93,12 @@ public class Table {
             addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
-
                     if (isRightMouseButton(e)) {
                         sourceTile = null;
                         destinationTile = null;
                         humanMovedPiece = null;
-                    } else if (isLeftMouseButton(e)) {
+                    }else if(isLeftMouseButton(e)) {
+
                         if (sourceTile == null) {
                             sourceTile = chessBoard.getTile(tileId);
                             humanMovedPiece = sourceTile.getPiece();
@@ -126,7 +107,11 @@ public class Table {
                             }
                         } else {
                             destinationTile = chessBoard.getTile(tileId);
-                            final Move1 move1 = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+                            final Move1 move = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+                            final MoveTransition1 transition = chessBoard.currentPlayer().makeMove(move);
+                            if (transition.getMoveStatus().isDone()) {
+                                chessBoard = transition.getTransitionBoard();
+                            }
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;
@@ -134,7 +119,7 @@ public class Table {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                boardPanel.drawBoard(chessBoard);
+                                this.boardPanel.drawBoard(chessBoard);
                             }
                         });
                     }
