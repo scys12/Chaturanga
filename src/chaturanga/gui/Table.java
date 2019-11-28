@@ -112,6 +112,7 @@ public class Table {
                             if (transition.getMoveStatus().isDone()) {
                                 chessBoard = transition.getTransitionBoard();
                             }
+                            System.out.println("ab");
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;
@@ -119,7 +120,7 @@ public class Table {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                this.boardPanel.drawBoard(chessBoard);
+                                boardPanel.drawBoard(chessBoard);
                             }
                         });
                     }

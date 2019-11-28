@@ -36,6 +36,7 @@ public class Pawn1 extends Piece1 {
 
                 if (!candidateDestinationTile.isTileOccupied()) {
                     legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
+                    System.out.println("ac");
                 } else {
                     //kalau ada pion didepan belakang samping kiri kanan
                 }
