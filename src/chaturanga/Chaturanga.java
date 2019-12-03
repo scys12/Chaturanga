@@ -1,99 +1,149 @@
 package chaturanga;
 
 import chaturanga.gui.Table;
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.nio.file.Files;
-//import java.nio.file.Paths;
-//
-//import javafx.animation.TranslateTransition;
-//import javafx.application.Application;
-//import javafx.geometry.*;
-//import javafx.scene.*;
-//import javafx.scene.image.*;
-//import javafx.scene.layout.*;
-//import javafx.scene.paint.*;
-//import javafx.scene.shape.*;
-//import javafx.scene.text.*;
-//import javafx.scene.input.KeyCode;
-//import javafx.scene.effect.DropShadow;
-//import javafx.stage.Stage;
-//import javafx.util.Duration;
-//
-public class Chaturanga {
-//
-//    private static Font font;
-//    private MenuBox menu;
-//
-//    private Parent createContent() {
-//        Pane root = new Pane();
-//        root.setPrefSize(800, 600);
-//
-//        try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"));
-//             InputStream fontStream = Files.newInputStream(Paths.get("src/art/chess.ttf"))) {
-//            ImageView img = new ImageView(new Image(is));
-//            img.setFitWidth(1066);
-//            img.setFitHeight(600);
-//
-//            root.getChildren().add(img);
-//
-//            font = Font.loadFont(fontStream, 30);
-//        }
-//        catch (IOException e) {
-//            System.out.println("Couldn't load image or font");
-//        }
-//
-//        MenuItem itemQuit = new MenuItem("QUIT");
-//        itemQuit.setOnMouseClicked(event -> System.exit(0));
-//
-//        menu = new MenuBox("CAMPAIGN",
-//                new MenuItem("NEW GAME"),
-//                itemQuit);
-//
-//        root.getChildren().add(menu);
-//        return root;
-//    }
-//
-//    @Override
-//    public void start(Stage primaryStage) throws Exception {
-//        Scene scene = new Scene(createContent());
-//        scene.setOnKeyPressed(event -> {
-//            if (event.getCode() == KeyCode.ESCAPE) {
-//                if (menu.isVisible()) {
-//                    menu.hide();
-//                }
-//                else {
-//                    menu.show();
-//                }
-//            }
-//        });
-//        primaryStage.setTitle("Chaturanga");
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
-//    }
-//
-//    private static class MenuBox extends StackPane {
-//        public MenuBox(String title, MenuItem... items) {
-//        }
-//
-//        public void show() {
-//            setVisible(true);
-//
-//        }
-//
-//        public void hide() {
-//        }
-//    }
-//
-//    private static class MenuItem extends StackPane {
-//        public MenuItem(String name) {
-//            Rectangle bg = new Rectangle(300, 24);
-//        }
-//    }
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class Chaturanga extends Application{
+    private Parent createContent() {
+        Pane root = new Pane();
+        root.setPrefSize(860, 600);
+
+        try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"))) {
+            ImageView img = new ImageView(new Image(is));
+            img.setFitWidth(860);
+            img.setFitHeight(600);
+            root.getChildren().add(img);
+        }
+        catch (IOException e) {
+            System.out.println("Couldn't load image");
+        }
+
+        Title title = new Title("C H A T U R A N G A");
+        title.setTranslateX(75);
+        title.setTranslateY(200);
+
+        MenuItem itemExit = new MenuItem("EXIT");
+        itemExit.setOnMouseClicked(event -> System.exit(0));
+
+        MenuItem newGame = new MenuItem("NEW GAME");
+        newGame.setOnMouseClicked(event -> new Table());
+
+        MenuBox menu = new MenuBox(
+                newGame,
+                itemExit);
+        menu.setTranslateX(100);
+        menu.setTranslateY(300);
+
+        root.getChildren().addAll(title, menu);
+        return root;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Scene scene = new Scene(createContent());
+        primaryStage.setTitle("Chaturanga");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private static class Title extends StackPane {
+        public Title(String name) {
+            Rectangle bg = new Rectangle(500, 60);
+            bg.setStroke(Color.WHITE);
+            bg.setStrokeWidth(2);
+            bg.setFill(null);
+
+            Text text = new Text(name);
+            text.setFill(Color.WHITE);
+            text.setFont(Font.font("Tw Cen MT Condensed", FontWeight.SEMI_BOLD, 50));
+
+            setAlignment(Pos.CENTER);
+            getChildren().addAll(bg, text);
+        }
+    }
+
+    private static class MenuBox extends VBox {
+        public MenuBox(MenuItem... items) {
+            getChildren().add(createSeparator());
+
+            for (MenuItem item : items) {
+                getChildren().addAll(item, createSeparator());
+            }
+        }
+
+        private Line createSeparator() {
+            Line sep = new Line();
+            sep.setEndX(200);
+            sep.setStroke(Color.DARKGREY);
+            return sep;
+        }
+    }
+
+    private static class MenuItem extends StackPane {
+        public MenuItem(String name) {
+            LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, new Stop[] {
+                    new Stop(0, Color.DARKVIOLET),
+                    new Stop(0.1, Color.BLACK),
+                    new Stop(0.9, Color.BLACK),
+                    new Stop(1, Color.DARKVIOLET)
+            });
+
+            Rectangle bg = new Rectangle(200, 30);
+            bg.setOpacity(0.4);
+
+            Text text = new Text(name);
+            text.setFill(Color.DARKGREY);
+            text.setFont(Font.font("Tw Cen MT Condensed", FontWeight.SEMI_BOLD, 22));
+
+            setAlignment(Pos.CENTER);
+            getChildren().addAll(bg, text);
+
+            setOnMouseEntered(event -> {
+                bg.setFill(gradient);
+                text.setFill(Color.WHITE);
+            });
+
+
+            setOnMouseExited(event -> {
+                bg.setFill(Color.BLACK);
+                text.setFill(Color.DARKGREY);
+            });
+
+            setOnMousePressed(event -> {
+                bg.setFill(Color.DARKVIOLET);
+            });
+
+            setOnMouseReleased(event -> {
+                bg.setFill(gradient);
+            });
+        }
+    }
 
     public static void main(String[] args) {
-        Table table = new Table();
+        launch(args);
 
     }
 }
