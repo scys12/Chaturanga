@@ -25,15 +25,15 @@ public class Pawn1 extends Piece1 {
     public Collection<Move1> calculateLegalMoves(Board1 board) {
         //menghitung berapa banyak move yang boleh dilakukan suatu pion
         final List<Move1> legalMoves = new ArrayList<>();
-        int canJumped;
+        boolean canJumped;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
+            canJumped = true;
             final int candidateDestinationCoordinate = this.piecePosition + currentCandidateOffset;
 
             if (isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) ||
                     isEightColumnExclusion(this.piecePosition, currentCandidateOffset)) {
                 continue;
             }
-
 
             if (BoardUtils1.isValidTileCoordinate(candidateDestinationCoordinate)) {
                 final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
@@ -42,10 +42,15 @@ public class Pawn1 extends Piece1 {
                     legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
                 } else {
                     final int candidateJumpedCoordinate = candidateDestinationCoordinate + currentCandidateOffset;
+                    System.out.printf("%d %d %d %d %n",this.piecePosition,candidateDestinationCoordinate,currentCandidateOffset,candidateJumpedCoordinate);
                     if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
                         final Tile1 candidateJumpedTile = board.getTile(candidateJumpedCoordinate);
 
-                        if (!candidateJumpedTile.isTileOccupied()) {
+                        if (isFirstColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset) ||
+                                isEightColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset)) {
+                            canJumped = false;
+                        }
+                        if (!candidateJumpedTile.isTileOccupied() && canJumped) {
                             legalMoves.add(new JumpedMove(board, this, candidateJumpedCoordinate));
                         }
                     }

@@ -9,6 +9,8 @@ import chaturanga.player.MoveTransition1;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 import java.awt.event.MouseEvent;
@@ -17,6 +19,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
@@ -33,12 +37,14 @@ public class Table {
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(350, 700);
     private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(0, 0);
-    private static final Dimension TILE_PANEL_DIMENSION = new Dimension(0, 0);
+    private static final Dimension TILE_PANEL_DIMENSION = new Dimension(100, 100);
 
     private static String defaultPieceImagesPath = "src/art/";
 
     private final Color lightTileColor = Color.decode("#FFFACD");
     private final Color darkTileColor = Color.decode("#593E1A");
+    private final Color hoverLightTileColor=Color.decode("#b59565");
+    private final Color hoverDarkTileColor=Color.decode("#bfa071");
 
     public Table() {
 
@@ -64,7 +70,7 @@ public class Table {
                 this.boardTiles.add(tilePanel);
                 add(tilePanel);
             }
-            setPreferredSize(BOARD_PANEL_DIMENSION);
+
             validate();
 
         }
@@ -87,7 +93,8 @@ public class Table {
             super(new GridBagLayout());
             this.tileId = tileId;
             setPreferredSize(TILE_PANEL_DIMENSION);
-            assignTileColor();
+            assignTileColor(lightTileColor, darkTileColor);
+
             assignTilePieceIcon(chessBoard);
 
             addMouseListener(new MouseListener() {
@@ -150,8 +157,9 @@ public class Table {
         }
 
         public void drawTile(final Board1 board1){
-            assignTileColor();
+            assignTileColor(lightTileColor, darkTileColor);
             assignTilePieceIcon(board1);
+            highlightLegals(board1);
             validate();
             repaint();
         }
@@ -170,13 +178,35 @@ public class Table {
             }
         }
 
-        private void assignTileColor() {
+        private void highlightLegals(final Board1 board) {
+            if (true) {
+                for (final Move1 move : pieceLegalMoves(board)) {
+                    if (move.getDestinationCoordinate() == this.tileId) {
+                        try {
+                            assignTileColor(hoverLightTileColor, hoverDarkTileColor);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+
+        private Collection<Move1> pieceLegalMoves(final Board1 board) {
+            if (humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()) {
+                return humanMovedPiece.calculateLegalMoves(board);
+            }
+            return Collections.emptyList();
+        }
+
+        private void assignTileColor(Color lightTileColor, Color darkTileColor) {
             if (BoardUtils1.EIGTH_RANK[this.tileId] || BoardUtils1.SIXTH_RANK[this.tileId] ||
                     BoardUtils1.FOURTH_RANK[this.tileId] || BoardUtils1.SECOND_RANK[this.tileId]) {
                 setBackground(this.tileId % 2 == 0 ? lightTileColor : darkTileColor);
             } else if (BoardUtils1.SEVENTH_RANK[this.tileId] || BoardUtils1.FIFTH_RANK[this.tileId] ||
                     BoardUtils1.THIRD_RANK[this.tileId] || BoardUtils1.FIRST_RANK[this.tileId]) {
                 setBackground(this.tileId % 2 != 0 ? lightTileColor : darkTileColor);
+
             }
         }
     }
