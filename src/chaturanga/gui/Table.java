@@ -6,6 +6,7 @@ import chaturanga.board.Move1;
 import chaturanga.board.Tile1;
 import chaturanga.piece.Piece1;
 import chaturanga.player.MoveTransition1;
+import chaturanga.sound.Sound;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -117,6 +118,7 @@ public class Table {
                             final Move1 move = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
                             final MoveTransition1 transition = chessBoard.currentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
+                                Sound.playSound("src/art/click1.wav");
                                 chessBoard = transition.getTransitionBoard();
                             }
                             sourceTile = null;
