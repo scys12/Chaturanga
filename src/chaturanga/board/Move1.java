@@ -52,15 +52,8 @@ public abstract class Move1 {
     }
 
     public static final class JumpedMove extends Move1{
-        final Piece1 jumpedPiece;
-
-        public JumpedMove(final Board1 board, final Piece1 movedPiece, final int destinationCoordinate, final Piece1 jumpedPiece) {
+        public JumpedMove(final Board1 board, final Piece1 movedPiece, final int destinationCoordinate) {
             super(board, movedPiece, destinationCoordinate);
-            this.jumpedPiece = jumpedPiece;
-        }
-
-        public Board1 execute() {
-            return null;
         }
     }
 

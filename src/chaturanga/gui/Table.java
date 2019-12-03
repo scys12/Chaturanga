@@ -112,7 +112,6 @@ public class Table {
                             if (transition.getMoveStatus().isDone()) {
                                 chessBoard = transition.getTransitionBoard();
                             }
-                            System.out.println("ab");
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;

@@ -48,6 +48,7 @@ public abstract class Player1 {
     }
 
     public MoveTransition1 makeMove(final Move1 move) {
+        //kalau movenya tidak sesuai dengan aturan
         if (!isMoveLegal(move)) {
             return new MoveTransition1(this.board, move, MoveStatus1.ILLEGAL_MOVE);
         }

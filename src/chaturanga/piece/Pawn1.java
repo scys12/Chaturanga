@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static chaturanga.board.Move1.*;
+
 public class Pawn1 extends Piece1 {
     public static final int[] CANDIDATE_MOVE_COORDINATE = {-5, -4, -3, -1, 1, 3, 4, 5};
 
@@ -21,8 +23,9 @@ public class Pawn1 extends Piece1 {
 
     @Override
     public Collection<Move1> calculateLegalMoves(Board1 board) {
+        //menghitung berapa banyak move yang boleh dilakukan suatu pion
         final List<Move1> legalMoves = new ArrayList<>();
-
+        int canJumped;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
             final int candidateDestinationCoordinate = this.piecePosition + currentCandidateOffset;
 
@@ -31,14 +34,22 @@ public class Pawn1 extends Piece1 {
                 continue;
             }
 
+
             if (BoardUtils1.isValidTileCoordinate(candidateDestinationCoordinate)) {
                 final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                 if (!candidateDestinationTile.isTileOccupied()) {
                     legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
-                    System.out.println("ac");
                 } else {
-                    //kalau ada pion didepan belakang samping kiri kanan
+                    final int candidateJumpedCoordinate = candidateDestinationCoordinate + currentCandidateOffset;
+                    if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
+                        final Tile1 candidateJumpedTile = board.getTile(candidateJumpedCoordinate);
+
+                        if (!candidateJumpedTile.isTileOccupied()) {
+                            legalMoves.add(new JumpedMove(board, this, candidateJumpedCoordinate));
+                        }
+                    }
+
                 }
             }
         }
@@ -47,6 +58,7 @@ public class Pawn1 extends Piece1 {
 
     @Override
     public Pawn1 movePiece(Move1 move) {
+        //
         return new Pawn1(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
     }
 

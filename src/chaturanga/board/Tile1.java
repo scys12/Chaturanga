@@ -10,6 +10,7 @@ public abstract class Tile1 {
     private static final Map<Integer, EmptyTile> EMPTY_TILE_CACHE = createAllPossiblyEmptyTiles();
 
     private static Map<Integer, EmptyTile> createAllPossiblyEmptyTiles() {
+        //membuat semua tile yang kosong dan direturn dalam bentuk map
         final Map<Integer, EmptyTile> emptyTileMap = new HashMap<>();
 
         for (int i = 0; i < BoardUtils1.NUM_TILES; i++) {
@@ -79,5 +80,4 @@ public abstract class Tile1 {
                     getPiece().toString();
         }
     }
-
 }

@@ -31,6 +31,7 @@ public class Board1 {
 
         this.whitePlayer = new WhitePlayer1(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer1(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        //hasil dari next move maker berupa Alliance.WHITE/BLACK nantinya di class Alliance1 direturn
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
 
@@ -67,6 +68,7 @@ public class Board1 {
         return this.whitePieces;
     }
     public Collection<Move1> calculateLegalMoves(final Collection<Piece1> pieces) {
+        //menghitung gerakan yang boleh dilakukan suatu pion dan ditambah semua
         final List<Move1> legalMoves = new ArrayList<>();
 
         for (final Piece1 piece : pieces) {
@@ -76,6 +78,7 @@ public class Board1 {
     }
 
     private static Collection<Piece1> calculateActivePieces(final List<Tile1> gameBoard, final Alliance1 alliance) {
+        //ngehitung berapa banyak pion yang masih aktif di papan catur dan dilist
         final List<Piece1> activePieces = new ArrayList<>();
         for (final Tile1 tile : gameBoard) {
             if (tile.isTileOccupied()) {
@@ -93,14 +96,18 @@ public class Board1 {
     }
 
     private static List<Tile1> createGameBoard(final Builder builder) {
+        //membuat list yang berisi tile2 sebanyak 32 yg merepresentasikan papan catur dan di loop ini
+        //kita akan melihat jika tile nya ada pion diatasnya atau enggak
         final Tile1[] tiles = new Tile1[BoardUtils1.NUM_TILES];
         for (int i = 0; i < BoardUtils1.NUM_TILES; i++) {
+
             tiles[i] = Tile1.createTile(i, builder.boardConfig.get(i));
         }
         return ImmutableList.copyOf(tiles);
     }
 
     public static Board1 createStandardBoard() {
+        //mengisi board dengan pion2
         final Builder builder = new Builder();
         //Black Layout
         builder.setPiece(new Pawn1(Alliance1.BLACK, 0));
@@ -131,6 +138,9 @@ public class Board1 {
     }
 
     public static class Builder {
+        //inisialisasi papan catur awal, kenapa dibuat builder, karena papan catur jika diinisialisi membutuhkan kelas lain
+        //jadi supaya datanya aman terpassing, dibuat inner class builder yg gunanya kyk constructor tpi lebih besar lagi
+
         Map<Integer, Piece1> boardConfig;//untuk ngemap tile ID dari chess board ke piece2
         Alliance1 nextMoveMaker;//track person whose turn to move
 
@@ -153,4 +163,3 @@ public class Board1 {
         }
     }
 }
-
