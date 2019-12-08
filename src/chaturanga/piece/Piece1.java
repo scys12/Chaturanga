@@ -5,19 +5,18 @@ import chaturanga.board.Board1;
 import chaturanga.board.Move1;
 
 import java.util.Collection;
+import java.util.List;
 
 public abstract class Piece1 {
     protected final PieceType pieceType;
-    protected final int piecePosition;
+    protected int piecePosition;
     protected final Alliance1 pieceAlliance;
     protected final int cachedHashCode;
-    protected final boolean isFirstMove;
 
     Piece1(final PieceType pieceType, final int piecePosition, final Alliance1 pieceAlliance) {
         this.piecePosition = piecePosition;
         this.pieceAlliance = pieceAlliance;
         this.pieceType = pieceType;
-        this.isFirstMove = false;
         this.cachedHashCode = computeHashCode();
     }
 
@@ -25,7 +24,6 @@ public abstract class Piece1 {
         int result = pieceType.hashCode();
         result = 31 * result + pieceAlliance.hashCode();
         result = 31 * result + piecePosition;
-        result = 31 * result + (isFirstMove ? 1 : 0);
         return result;
     }
 
@@ -39,7 +37,7 @@ public abstract class Piece1 {
         }
         final Piece1 otherPiece = (Piece1) other;
         return piecePosition == otherPiece.getPiecePosition() && pieceType == otherPiece.getPieceType() &&
-                pieceAlliance == otherPiece.getPieceAlliance() && isFirstMove == otherPiece.isFirstMove;
+                pieceAlliance == otherPiece.getPieceAlliance();
     }
 
     @Override
@@ -47,12 +45,15 @@ public abstract class Piece1 {
         int result = pieceType.hashCode();
         result = 31 * result + pieceAlliance.hashCode();
         result = 31 * result + piecePosition;
-        result = 31 * result + (isFirstMove ? 1 : 0);
         return result;
     }
 
     public int getPiecePosition() {
         return this.piecePosition;
+    }
+
+    public void setPiecePosition(int piecePosition) {
+        this.piecePosition = piecePosition;
     }
 
     public Alliance1 getPieceAlliance() {

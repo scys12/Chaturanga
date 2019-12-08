@@ -1,17 +1,13 @@
 package chaturanga.piece;
 
 import chaturanga.Alliance1;
-import chaturanga.board.Board1;
-import chaturanga.board.BoardUtils1;
-import chaturanga.board.Move1;
+import chaturanga.board.*;
 import chaturanga.board.Move1.MajorMove;
-import chaturanga.board.Tile1;
 import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
+import static chaturanga.board.BreadthFirstMove.*;
 import static chaturanga.board.Move1.*;
 
 public class Pawn1 extends Piece1 {
@@ -28,10 +24,10 @@ public class Pawn1 extends Piece1 {
         boolean canJumped;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
             canJumped = true;
-            final int candidateDestinationCoordinate = this.piecePosition + currentCandidateOffset;
+            final int candidateDestinationCoordinate =  piecePosition + currentCandidateOffset;
 
-            if (isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) ||
-                    isEightColumnExclusion(this.piecePosition, currentCandidateOffset)) {
+            if (isFirstColumnExclusion(piecePosition, currentCandidateOffset) ||
+                    isEightColumnExclusion(piecePosition, currentCandidateOffset)) {
                 continue;
             }
 
@@ -39,10 +35,9 @@ public class Pawn1 extends Piece1 {
                 final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                 if (!candidateDestinationTile.isTileOccupied()) {
-                    legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
+                        legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
                 } else {
                     final int candidateJumpedCoordinate = candidateDestinationCoordinate + currentCandidateOffset;
-                    System.out.printf("%d %d %d %d %n",this.piecePosition,candidateDestinationCoordinate,currentCandidateOffset,candidateJumpedCoordinate);
                     if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
                         final Tile1 candidateJumpedTile = board.getTile(candidateJumpedCoordinate);
 
@@ -52,13 +47,37 @@ public class Pawn1 extends Piece1 {
                         }
                         if (!candidateJumpedTile.isTileOccupied() && canJumped) {
                             legalMoves.add(new JumpedMove(board, this, candidateJumpedCoordinate));
+                            legalMoves.addAll(calculateJumpedMove(board, this, this.piecePosition, candidateJumpedCoordinate));
+
                         }
                     }
-
                 }
             }
         }
         return ImmutableList.copyOf(legalMoves);
+    }
+
+    private Collection<Move1> calculateJumpedMove(Board1 board, Piece1 piece, int initialPosition, int newInitialCandidate) {
+        final List<Move1> jumpedMoves = new ArrayList<>();
+        for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
+            final int candidateBlockedCoordinate = newInitialCandidate + currentCandidateOffset;
+            final int candidateDestinationCoordinate = newInitialCandidate + currentCandidateOffset * 2;
+            if (isFirstColumnExclusion(newInitialCandidate, currentCandidateOffset) ||
+                    isEightColumnExclusion(newInitialCandidate, currentCandidateOffset) ||
+                    isFirstColumnExclusion(candidateBlockedCoordinate,currentCandidateOffset)||
+                    isEightColumnExclusion(candidateBlockedCoordinate,currentCandidateOffset)) {
+                continue;
+            }
+            if (BoardUtils1.isValidTileCoordinate(candidateDestinationCoordinate)) {
+                final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
+                final Tile1 candidateBlockedTile = board.getTile(candidateBlockedCoordinate);
+
+                if (!candidateDestinationTile.isTileOccupied() && candidateBlockedTile.isTileOccupied()) {
+                    jumpedMoves.add(new JumpedMove(board, this, candidateDestinationCoordinate));
+                }
+            }
+        }
+        return ImmutableList.copyOf(jumpedMoves);
     }
 
     @Override

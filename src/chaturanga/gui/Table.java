@@ -113,12 +113,13 @@ public class Table {
                             if (humanMovedPiece == null) {
                                 sourceTile = null;
                             }
+                                Sound.playSound("src/art/click1.wav");
                         } else {
                             destinationTile = chessBoard.getTile(tileId);
                             final Move1 move = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
                             final MoveTransition1 transition = chessBoard.currentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
-                                Sound.playSound("src/art/click1.wav");
+                                Sound.playSound("src/art/move.wav");
                                 chessBoard = transition.getTransitionBoard();
                             }
                             sourceTile = null;
