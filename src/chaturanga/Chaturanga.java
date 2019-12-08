@@ -2,6 +2,7 @@ package chaturanga;
 
 import chaturanga.gui.Table;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,20 +22,23 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Chaturanga extends Application{
-    private Parent createContent() {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Platform.setImplicitExit(false);
         Pane root = new Pane();
-        root.setPrefSize(860, 600);
+        root.setPrefSize(860, 700);
 
         try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"))) {
             ImageView img = new ImageView(new Image(is));
             img.setFitWidth(860);
-            img.setFitHeight(600);
+            img.setFitHeight(700);
             root.getChildren().add(img);
         }
         catch (IOException e) {
@@ -49,7 +53,10 @@ public class Chaturanga extends Application{
         itemExit.setOnMouseClicked(event -> System.exit(0));
 
         MenuItem newGame = new MenuItem("NEW GAME");
-        newGame.setOnMouseClicked(event -> new Table());
+        newGame.setOnMouseClicked(event -> {
+            SwingUtilities.invokeLater(Table::new);
+            primaryStage.hide();
+        });
 
         MenuBox menu = new MenuBox(
                 newGame,
@@ -58,12 +65,7 @@ public class Chaturanga extends Application{
         menu.setTranslateY(300);
 
         root.getChildren().addAll(title, menu);
-        return root;
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(createContent());
+        Scene scene = new Scene(root);
         primaryStage.setTitle("Chaturanga");
         primaryStage.setScene(scene);
         primaryStage.show();

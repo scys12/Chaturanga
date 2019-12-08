@@ -24,10 +24,10 @@ public class Pawn1 extends Piece1 {
         boolean canJumped;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
             canJumped = true;
-            final int candidateDestinationCoordinate =  piecePosition + currentCandidateOffset;
+            final int candidateDestinationCoordinate =  this.piecePosition + currentCandidateOffset;
 
-            if (isFirstColumnExclusion(piecePosition, currentCandidateOffset) ||
-                    isEightColumnExclusion(piecePosition, currentCandidateOffset)) {
+            if (isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) ||
+                    isEightColumnExclusion(this.piecePosition, currentCandidateOffset)) {
                 continue;
             }
 
@@ -35,54 +35,55 @@ public class Pawn1 extends Piece1 {
                 final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
 
                 if (!candidateDestinationTile.isTileOccupied()) {
-                        legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
-                } else {
-                    final int candidateJumpedCoordinate = candidateDestinationCoordinate + currentCandidateOffset;
-                    if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
-                        final Tile1 candidateJumpedTile = board.getTile(candidateJumpedCoordinate);
-
-                        if (isFirstColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset) ||
-                                isEightColumnExclusion(candidateDestinationCoordinate, currentCandidateOffset)) {
-                            canJumped = false;
-                        }
-                        if (!candidateJumpedTile.isTileOccupied() && canJumped) {
-                            legalMoves.add(new JumpedMove(board, this, candidateJumpedCoordinate));
-                            legalMoves.addAll(calculateJumpedMove(board, this, this.piecePosition, candidateJumpedCoordinate));
-
-                        }
-                    }
+                    legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
                 }
             }
         }
         return ImmutableList.copyOf(legalMoves);
     }
 
-    private Collection<Move1> calculateJumpedMove(Board1 board, Piece1 piece, int initialPosition, int newInitialCandidate) {
-        final List<Move1> jumpedMoves = new ArrayList<>();
+    @Override
+    public Collection<Move1> calculateLegalJumpedMoves(Board1 board, int oldPiecePosition, Map<Integer,Boolean> isVisited) {
+        final List<Move1> jumpedMove = new ArrayList<>();
+        int countJumped = 0;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
-            final int candidateBlockedCoordinate = newInitialCandidate + currentCandidateOffset;
-            final int candidateDestinationCoordinate = newInitialCandidate + currentCandidateOffset * 2;
-            if (isFirstColumnExclusion(newInitialCandidate, currentCandidateOffset) ||
-                    isEightColumnExclusion(newInitialCandidate, currentCandidateOffset) ||
-                    isFirstColumnExclusion(candidateBlockedCoordinate,currentCandidateOffset)||
-                    isEightColumnExclusion(candidateBlockedCoordinate,currentCandidateOffset)) {
+            final int blockedPiecePosition = oldPiecePosition + currentCandidateOffset;
+
+            if (isFirstColumnExclusion(oldPiecePosition, currentCandidateOffset) ||
+                    isEightColumnExclusion(oldPiecePosition, currentCandidateOffset)) {
                 continue;
             }
-            if (BoardUtils1.isValidTileCoordinate(candidateDestinationCoordinate)) {
-                final Tile1 candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
-                final Tile1 candidateBlockedTile = board.getTile(candidateBlockedCoordinate);
 
-                if (!candidateDestinationTile.isTileOccupied() && candidateBlockedTile.isTileOccupied()) {
-                    jumpedMoves.add(new JumpedMove(board, this, candidateDestinationCoordinate));
+            if (BoardUtils1.isValidTileCoordinate(blockedPiecePosition)) {
+                final Tile1 blockedPieceTile = board.getTile(blockedPiecePosition);
+
+                if (blockedPieceTile.isTileOccupied()) {
+
+                    if (isFirstColumnExclusion(blockedPiecePosition, currentCandidateOffset) ||
+                            isEightColumnExclusion(blockedPiecePosition, currentCandidateOffset)) {
+                        continue;
+                    }
+
+                    final int candidateJumpedCoordinate = blockedPiecePosition + currentCandidateOffset;
+                    if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
+                        final Tile1 jumpedCoordinateTile = board.getTile(candidateJumpedCoordinate);
+                        if (!jumpedCoordinateTile.isTileOccupied()) {
+                            if (!isVisited.containsKey(candidateJumpedCoordinate)) {
+                                isVisited.put(candidateJumpedCoordinate, true);
+                                jumpedMove.add(new JumpedMove(board, this, candidateJumpedCoordinate));
+                                System.out.printf("%d %d %d%n",oldPiecePosition, candidateJumpedCoordinate,currentCandidateOffset);
+                                jumpedMove.addAll(calculateLegalJumpedMoves(board, candidateJumpedCoordinate, isVisited));
+                            }
+                        }
+                    }
                 }
             }
         }
-        return ImmutableList.copyOf(jumpedMoves);
+        return ImmutableList.copyOf(jumpedMove);
     }
 
     @Override
     public Pawn1 movePiece(Move1 move) {
-        //
         return new Pawn1(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
     }
 

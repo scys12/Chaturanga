@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class BreadthFirstMove extends Move1 {
+public class BreadthFirstMove {
     private Queue<NodePiece> currentPiece;
     static ArrayList<NodePiece> chainPiece = new ArrayList<NodePiece>();
 
-    public static class NodePiece {
-        int destinationCoordinate;
-        boolean isVisited;
-        List<NodePiece> nextPiece;
+     public static class NodePiece {
+        public int destinationCoordinate;
+        public boolean isVisited;
+        public List<NodePiece> nextPiece;
 
         public NodePiece(int destinationCoordinate) {
             this.destinationCoordinate = destinationCoordinate;
@@ -34,8 +34,7 @@ public class BreadthFirstMove extends Move1 {
         }
     }
 
-    public BreadthFirstMove(Board1 board, Piece1 movedPiece, int destinationCoordinate) {
-        super(board, movedPiece, destinationCoordinate);
+    public BreadthFirstMove() {
         currentPiece = new LinkedList<NodePiece>();
     }
 

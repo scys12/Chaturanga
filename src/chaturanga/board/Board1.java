@@ -73,6 +73,7 @@ public class Board1 {
 
         for (final Piece1 piece : pieces) {
             legalMoves.addAll(piece.calculateLegalMoves(this));
+            legalMoves.addAll(piece.calculateLegalJumpedMoves(this, piece.getPiecePosition(), new HashMap<Integer, Boolean>()));
         }
         return ImmutableList.copyOf(legalMoves);
     }

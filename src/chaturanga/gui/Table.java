@@ -19,9 +19,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
@@ -56,6 +54,7 @@ public class Table {
         this.chessBoard = Board1.createStandardBoard();
         this.boardPanel = new BoardPanel();
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
 
     }
@@ -192,7 +191,23 @@ public class Table {
                         }
                     }
                 }
+                for (final Move1 move : pieceLegalJumpedMoves(board)) {
+                    if (move.getDestinationCoordinate() == this.tileId) {
+                        try {
+                            assignTileColor(hoverLightTileColor, hoverDarkTileColor);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
+        }
+
+        private Collection<Move1> pieceLegalJumpedMoves(final Board1 board) {
+            if (humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()) {
+                return humanMovedPiece.calculateLegalJumpedMoves(board, humanMovedPiece.getPiecePosition(), new HashMap<Integer, Boolean>());
+            }
+            return Collections.emptyList();
         }
 
         private Collection<Move1> pieceLegalMoves(final Board1 board) {

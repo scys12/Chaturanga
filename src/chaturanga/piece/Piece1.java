@@ -2,10 +2,14 @@ package chaturanga.piece;
 
 import chaturanga.Alliance1;
 import chaturanga.board.Board1;
+import chaturanga.board.BreadthFirstMove;
+import chaturanga.board.BreadthFirstMove.NodePiece;
 import chaturanga.board.Move1;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Piece1 {
     protected final PieceType pieceType;
@@ -65,6 +69,8 @@ public abstract class Piece1 {
     }
 
     public abstract Collection<Move1> calculateLegalMoves (final Board1 board);
+
+    public abstract Collection<Move1> calculateLegalJumpedMoves(final Board1 board, final int oldPiecePosition, Map<Integer,Boolean> isVisited);
 
     public abstract Piece1 movePiece(Move1 move);//return a new piece that will update to move to its destination
 
