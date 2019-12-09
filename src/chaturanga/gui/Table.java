@@ -10,8 +10,6 @@ import chaturanga.sound.Sound;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 import java.awt.event.MouseEvent;
@@ -53,6 +51,7 @@ public class Table {
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.chessBoard = Board1.createStandardBoard();
         this.boardPanel = new BoardPanel();
+        Sound.playContinuous("src/art/main-game-back-sound.wav");
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
@@ -112,7 +111,7 @@ public class Table {
                             if (humanMovedPiece == null) {
                                 sourceTile = null;
                             }
-                                Sound.playSound("src/art/click1.wav");
+                                Sound.playSound("src/art/clickpawn.wav");
                         } else {
                             destinationTile = chessBoard.getTile(tileId);
                             final Move1 move = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());

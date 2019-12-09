@@ -26,7 +26,6 @@ public abstract class Player1 {
             if (board.getTile(i).isTileOccupied() && i <= 7) {
                 final Piece1 piece = board.getTile(i).getPiece();
                 if (piece.getPieceAlliance() != white) {
-                    System.out.println(i);
                     whiteInRightPlace = false;
                 }
             } else if (!board.getTile(i).isTileOccupied() && i <= 7) {
@@ -35,7 +34,6 @@ public abstract class Player1 {
             if (board.getTile(i).isTileOccupied() && i >= 24) {
                 final Piece1 piece = board.getTile(i).getPiece();
                 if (piece.getPieceAlliance() != black) {
-                    System.out.println(i);
                     blackInRightPlace = false;
                 }
             } else if (!board.getTile(i).isTileOccupied() && i >= 24) {
@@ -43,10 +41,8 @@ public abstract class Player1 {
             }
         }
         if (blackInRightPlace || whiteInRightPlace) {
-            System.out.println("true");
             return true;
         }
-        System.out.println("false");
         return false;
     }
 
@@ -75,7 +71,6 @@ public abstract class Player1 {
         final Board1 transitionBoard = move.execute();
         final boolean checkPositionForCheckMate = Player1.getAllPosition(this.board, Alliance1.BLACK, Alliance1.WHITE);
         if (checkPositionForCheckMate) {
-            System.out.println("a");
             return new MoveTransition1(this.board, move, MoveStatus1.LEAVES_PLAYER_IN_CHECK);
         }
         return new MoveTransition1(transitionBoard, move, MoveStatus1.DONE);

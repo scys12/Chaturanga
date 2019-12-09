@@ -1,16 +1,18 @@
 package chaturanga;
 
 import chaturanga.gui.Table;
+import chaturanga.sound.Sound;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -21,29 +23,42 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Chaturanga extends Application{
+    private static Font font;
     @Override
     public void start(Stage primaryStage) throws Exception {
         Platform.setImplicitExit(false);
         Pane root = new Pane();
         root.setPrefSize(860, 700);
 
-        try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"))) {
+        try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"));
+             InputStream fontStream = Files.newInputStream(Paths.get("src/art/chess.ttf"))) {
             ImageView img = new ImageView(new Image(is));
             img.setFitWidth(860);
             img.setFitHeight(700);
             root.getChildren().add(img);
+            font = Font.loadFont(fontStream, 40);
         }
         catch (IOException e) {
             System.out.println("Couldn't load image");
         }
+
+        MediaPlayer a =new MediaPlayer(new Media(new File("src/art/menu-back-sound.wav").toURI().toString()));
+        a.setOnEndOfMedia(new Runnable() {
+            public void run() {
+                a.seek(Duration.ZERO);
+            }
+        });
+        a.play();
 
         Title title = new Title("C H A T U R A N G A");
         title.setTranslateX(75);
@@ -52,14 +67,23 @@ public class Chaturanga extends Application{
         MenuItem itemExit = new MenuItem("EXIT");
         itemExit.setOnMouseClicked(event -> System.exit(0));
 
-        MenuItem newGame = new MenuItem("NEW GAME");
-        newGame.setOnMouseClicked(event -> {
+        MenuItem options = new MenuItem("OPTIONS");
+        itemExit.setOnMouseClicked(event -> System.exit(0));
+
+        MenuItem vsCom = new MenuItem("NEW GAME[VS COM]");
+        vsCom.setOnMouseClicked( event -> System.exit(0));
+
+        MenuItem vsHuman = new MenuItem("NEW GAME[VS HUMAN]");
+        vsHuman.setOnMouseClicked(event -> {
             SwingUtilities.invokeLater(Table::new);
+            a.stop();
             primaryStage.hide();
         });
 
         MenuBox menu = new MenuBox(
-                newGame,
+                vsHuman,
+                vsCom,
+                options,
                 itemExit);
         menu.setTranslateX(100);
         menu.setTranslateY(300);
@@ -80,7 +104,7 @@ public class Chaturanga extends Application{
 
             Text text = new Text(name);
             text.setFill(Color.WHITE);
-            text.setFont(Font.font("Tw Cen MT Condensed", FontWeight.SEMI_BOLD, 50));
+            text.setFont(font);
 
             setAlignment(Pos.CENTER);
             getChildren().addAll(bg, text);
@@ -124,6 +148,7 @@ public class Chaturanga extends Application{
             getChildren().addAll(bg, text);
 
             setOnMouseEntered(event -> {
+                Sound.playSound("src/art/hover.wav");
                 bg.setFill(gradient);
                 text.setFill(Color.WHITE);
             });
@@ -135,6 +160,7 @@ public class Chaturanga extends Application{
             });
 
             setOnMousePressed(event -> {
+                Sound.playSound("src/art/clickmenu.wav");
                 bg.setFill(Color.DARKVIOLET);
             });
 

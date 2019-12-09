@@ -44,6 +44,7 @@ public class Pawn1 extends Piece1 {
 
     @Override
     public Collection<Move1> calculateLegalJumpedMoves(Board1 board, int oldPiecePosition, Map<Integer,Boolean> isVisited) {
+        if (!isVisited.containsKey(this.piecePosition))  isVisited.put(this.piecePosition, true);
         final List<Move1> jumpedMove = new ArrayList<>();
         int countJumped = 0;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
@@ -66,12 +67,12 @@ public class Pawn1 extends Piece1 {
 
                     final int candidateJumpedCoordinate = blockedPiecePosition + currentCandidateOffset;
                     if (BoardUtils1.isValidTileCoordinate(candidateJumpedCoordinate)) {
+
                         final Tile1 jumpedCoordinateTile = board.getTile(candidateJumpedCoordinate);
                         if (!jumpedCoordinateTile.isTileOccupied()) {
                             if (!isVisited.containsKey(candidateJumpedCoordinate)) {
                                 isVisited.put(candidateJumpedCoordinate, true);
                                 jumpedMove.add(new JumpedMove(board, this, candidateJumpedCoordinate));
-                                System.out.printf("%d %d %d%n",oldPiecePosition, candidateJumpedCoordinate,currentCandidateOffset);
                                 jumpedMove.addAll(calculateLegalJumpedMoves(board, candidateJumpedCoordinate, isVisited));
                             }
                         }
