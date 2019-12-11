@@ -1,11 +1,11 @@
 package chaturanga.gui;
 
-import chaturanga.board.Board1;
-import chaturanga.board.BoardUtils1;
-import chaturanga.board.Move1;
-import chaturanga.board.Tile1;
-import chaturanga.piece.Piece1;
-import chaturanga.player.MoveTransition1;
+import chaturanga.board.Board;
+import chaturanga.board.BoardUtils;
+import chaturanga.board.Move;
+import chaturanga.board.Tile;
+import chaturanga.piece.Piece;
+import chaturanga.player.MoveTransition;
 import chaturanga.sound.Sound;
 
 import javax.imageio.ImageIO;
@@ -26,11 +26,11 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public class Table {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
-    private Board1 chessBoard;
+    private Board chessBoard;
 
-    private Tile1 sourceTile;
-    private Tile1 destinationTile;
-    private Piece1 humanMovedPiece;
+    private Tile sourceTile;
+    private Tile destinationTile;
+    private Piece humanMovedPiece;
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(350, 700);
     private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(0, 0);
@@ -49,13 +49,13 @@ public class Table {
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.chessBoard = Board1.createStandardBoard();
+        this.chessBoard = Board.createStandardBoard();
         this.boardPanel = new BoardPanel();
         Sound.playContinuous("src/art/main-game-back-sound.wav");
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
-
+        this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private class BoardPanel extends JPanel {
@@ -64,7 +64,7 @@ public class Table {
         BoardPanel() {
             super(new GridLayout(8,8));
             this.boardTiles = new ArrayList<>();
-            for (int i = 0; i < BoardUtils1.NUM_TILES; i++) {
+            for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
                 final TilePanel tilePanel = new TilePanel(this, i);
                 this.boardTiles.add(tilePanel);
                 add(tilePanel);
@@ -74,10 +74,10 @@ public class Table {
 
         }
 
-        public void drawBoard(final Board1 board1){
+        public void drawBoard(final Board board){
             removeAll();
             for(final TilePanel tilePanel : boardTiles){
-                tilePanel.drawTile(board1);
+                tilePanel.drawTile(board);
                 add(tilePanel);
             }
             validate();
@@ -96,76 +96,81 @@ public class Table {
 
             assignTilePieceIcon(chessBoard);
 
-            addMouseListener(new MouseListener() {
-                @Override
-                public void mouseClicked(final MouseEvent e) {
-                    if (isRightMouseButton(e)) {
-                        sourceTile = null;
-                        destinationTile = null;
-                        humanMovedPiece = null;
-                    }else if(isLeftMouseButton(e)) {
+            System.out.println(chessBoard.currentPlayer().getAlliance().isWhite()+"bw");
 
-                        if (sourceTile == null) {
-                            sourceTile = chessBoard.getTile(tileId);
-                            humanMovedPiece = sourceTile.getPiece();
-                            if (humanMovedPiece == null) {
-                                sourceTile = null;
-                            }
-                                Sound.playSound("src/art/clickpawn.wav");
-                        } else {
-                            destinationTile = chessBoard.getTile(tileId);
-                            final Move1 move = Move1.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
-                            final MoveTransition1 transition = chessBoard.currentPlayer().makeMove(move);
-                            if (transition.getMoveStatus().isDone()) {
-                                Sound.playSound("src/art/move.wav");
-                                chessBoard = transition.getTransitionBoard();
-                            }
+            if (!chessBoard.currentPlayer().isInCheckMate()) {
+                System.out.println("masuk");
+                addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(final MouseEvent e) {
+                        if (isRightMouseButton(e)) {
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;
-                        }
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                boardPanel.drawBoard(chessBoard);
+                        }else if(isLeftMouseButton(e)) {
+
+                            if (sourceTile == null) {
+                                sourceTile = chessBoard.getTile(tileId);
+                                humanMovedPiece = sourceTile.getPiece();
+                                if (humanMovedPiece == null) {
+                                    sourceTile = null;
+                                }
+                                Sound.playSound("src/art/clickpawn.wav");
+                            } else {
+                                destinationTile = chessBoard.getTile(tileId);
+                                final Move move = Move.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+                                final MoveTransition transition = chessBoard.currentPlayer().makeMove(move);
+                                if (transition.getMoveStatus().isDone()) {
+                                    Sound.playSound("src/art/move.wav");
+                                    chessBoard = transition.getTransitionBoard();
+                                }
+                                sourceTile = null;
+                                destinationTile = null;
+                                humanMovedPiece = null;
                             }
-                        });
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    boardPanel.drawBoard(chessBoard);
+                                }
+                            });
+                        }
                     }
-                }
-                @Override
-                public void mousePressed(MouseEvent e) {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
 
-                }
+                    }
 
-                @Override
-                public void mouseReleased(MouseEvent e) {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
 
-                }
+                    }
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
 
-                }
+                    }
 
-                @Override
-                public void mouseExited(MouseEvent e) {
+                    @Override
+                    public void mouseExited(MouseEvent e) {
 
-                }
+                    }
 
-            });
+                });
+            }
 
             validate();
         }
 
-        public void drawTile(final Board1 board1){
+        public void drawTile(final Board board){
             assignTileColor(lightTileColor, darkTileColor);
-            assignTilePieceIcon(board1);
-            highlightLegals(board1);
+            assignTilePieceIcon(board);
+            highlightLegals(board);
             validate();
             repaint();
         }
 
-        private void assignTilePieceIcon(final Board1 board) {
+        private void assignTilePieceIcon(final Board board) {
             this.removeAll();
             if (board.getTile(this.tileId).isTileOccupied()) {
 
@@ -179,9 +184,9 @@ public class Table {
             }
         }
 
-        private void highlightLegals(final Board1 board) {
+        private void highlightLegals(final Board board) {
             if (true) {
-                for (final Move1 move : pieceLegalMoves(board)) {
+                for (final Move move : pieceLegalMoves(board)) {
                     if (move.getDestinationCoordinate() == this.tileId) {
                         try {
                             assignTileColor(hoverLightTileColor, hoverDarkTileColor);
@@ -190,7 +195,7 @@ public class Table {
                         }
                     }
                 }
-                for (final Move1 move : pieceLegalJumpedMoves(board)) {
+                for (final Move move : pieceLegalJumpedMoves(board)) {
                     if (move.getDestinationCoordinate() == this.tileId) {
                         try {
                             assignTileColor(hoverLightTileColor, hoverDarkTileColor);
@@ -202,14 +207,14 @@ public class Table {
             }
         }
 
-        private Collection<Move1> pieceLegalJumpedMoves(final Board1 board) {
+        private Collection<Move> pieceLegalJumpedMoves(final Board board) {
             if (humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()) {
                 return humanMovedPiece.calculateLegalJumpedMoves(board, humanMovedPiece.getPiecePosition(), new HashMap<Integer, Boolean>());
             }
             return Collections.emptyList();
         }
 
-        private Collection<Move1> pieceLegalMoves(final Board1 board) {
+        private Collection<Move> pieceLegalMoves(final Board board) {
             if (humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()) {
                 return humanMovedPiece.calculateLegalMoves(board);
             }
@@ -217,11 +222,11 @@ public class Table {
         }
 
         private void assignTileColor(Color lightTileColor, Color darkTileColor) {
-            if (BoardUtils1.EIGTH_RANK[this.tileId] || BoardUtils1.SIXTH_RANK[this.tileId] ||
-                    BoardUtils1.FOURTH_RANK[this.tileId] || BoardUtils1.SECOND_RANK[this.tileId]) {
+            if (BoardUtils.EIGTH_RANK[this.tileId] || BoardUtils.SIXTH_RANK[this.tileId] ||
+                    BoardUtils.FOURTH_RANK[this.tileId] || BoardUtils.SECOND_RANK[this.tileId]) {
                 setBackground(this.tileId % 2 == 0 ? lightTileColor : darkTileColor);
-            } else if (BoardUtils1.SEVENTH_RANK[this.tileId] || BoardUtils1.FIFTH_RANK[this.tileId] ||
-                    BoardUtils1.THIRD_RANK[this.tileId] || BoardUtils1.FIRST_RANK[this.tileId]) {
+            } else if (BoardUtils.SEVENTH_RANK[this.tileId] || BoardUtils.FIFTH_RANK[this.tileId] ||
+                    BoardUtils.THIRD_RANK[this.tileId] || BoardUtils.FIRST_RANK[this.tileId]) {
                 setBackground(this.tileId % 2 != 0 ? lightTileColor : darkTileColor);
 
             }

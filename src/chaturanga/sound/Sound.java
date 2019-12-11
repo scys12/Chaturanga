@@ -37,17 +37,16 @@ public class Sound {
             InputStream test = new FileInputStream(filePath);
             BGM = new AudioStream(test);
             AudioPlayer.player.start(BGM);
-            //MD = BGM.getData();
-            //loop = new ContinuousAudioDataStream(MD);
-
+            MD = BGM.getData();
+            loop = new ContinuousAudioDataStream(MD);
+            MGP.start(loop);
         }
         catch(FileNotFoundException e){
-            System.out.print(e.toString());
+
         }
         catch(IOException error)
         {
-            System.out.print(error.toString());
+
         }
-        MGP.start(loop);
     }
 }
