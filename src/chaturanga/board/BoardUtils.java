@@ -41,4 +41,8 @@ public class BoardUtils {
     public static boolean isValidTileCoordinate(final int coordinate) {
         return coordinate >= 0 && coordinate < NUM_TILES;
     }
+
+    public static boolean isEndGame(final Board board) {
+        return board.currentPlayer().isInCheckMate();
+    }
 }

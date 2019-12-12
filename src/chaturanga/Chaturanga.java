@@ -1,5 +1,6 @@
 package chaturanga;
 
+import chaturanga.gui.Menu;
 import chaturanga.gui.Table;
 import chaturanga.sound.Sound;
 import javafx.application.Application;
@@ -38,7 +39,7 @@ public class Chaturanga extends Application{
     public void start(Stage primaryStage) throws Exception {
         Platform.setImplicitExit(false);
         Pane root = new Pane();
-        root.setPrefSize(860, 700);
+        root.setPrefSize(860,  700);
 
         try (InputStream is = Files.newInputStream(Paths.get("src/art/chess.jpg"));
              InputStream fontStream = Files.newInputStream(Paths.get("src/art/chess.ttf"))) {
@@ -67,23 +68,20 @@ public class Chaturanga extends Application{
         MenuItem itemExit = new MenuItem("EXIT");
         itemExit.setOnMouseClicked(event -> System.exit(0));
 
-        MenuItem options = new MenuItem("OPTIONS");
-        itemExit.setOnMouseClicked(event -> System.exit(0));
-
-        MenuItem vsCom = new MenuItem("NEW GAME[VS COM]");
-        vsCom.setOnMouseClicked( event -> System.exit(0));
-
         MenuItem vsHuman = new MenuItem("NEW GAME[VS HUMAN]");
         vsHuman.setOnMouseClicked(event -> {
-            SwingUtilities.invokeLater(Table::new);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    Table table = new Table();
+                }
+            });
             a.stop();
             primaryStage.hide();
         });
 
         MenuBox menu = new MenuBox(
                 vsHuman,
-                vsCom,
-                options,
                 itemExit);
         menu.setTranslateX(100);
         menu.setTranslateY(300);
@@ -95,7 +93,7 @@ public class Chaturanga extends Application{
         primaryStage.show();
     }
 
-    private static class Title extends StackPane {
+    public static class Title extends StackPane {
         public Title(String name) {
             Rectangle bg = new Rectangle(500, 60);
             bg.setStroke(Color.WHITE);
@@ -111,7 +109,7 @@ public class Chaturanga extends Application{
         }
     }
 
-    private static class MenuBox extends VBox {
+    public static class MenuBox extends VBox {
         public MenuBox(MenuItem... items) {
             getChildren().add(createSeparator());
 
@@ -128,7 +126,7 @@ public class Chaturanga extends Application{
         }
     }
 
-    private static class MenuItem extends StackPane {
+    public static class MenuItem extends StackPane {
         public MenuItem(String name) {
             LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, new Stop[] {
                     new Stop(0, Color.DARKVIOLET),

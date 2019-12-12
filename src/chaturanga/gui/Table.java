@@ -14,6 +14,7 @@ import java.awt.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,8 @@ public class Table {
     private Piece humanMovedPiece;
 
     private final static Dimension OUTER_FRAME_DIMENSION = new Dimension(350, 700);
+    public static final int WIDTH = 350;
+    public static final int HEIGHT = 700;
     private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(0, 0);
     private static final Dimension TILE_PANEL_DIMENSION = new Dimension(100, 100);
 
@@ -95,14 +98,20 @@ public class Table {
             assignTileColor(lightTileColor, darkTileColor);
 
             assignTilePieceIcon(chessBoard);
-
-            System.out.println(chessBoard.currentPlayer().getAlliance().isWhite()+"bw");
-
-            if (!chessBoard.currentPlayer().isInCheckMate()) {
-                System.out.println("masuk");
                 addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(final MouseEvent e) {
+
+                        if (chessBoard.currentPlayer().isInCheckMate()) {
+                            Sound.playSound("src/art/win.wav");
+                            String win;
+                            if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
+                                win = "Black Player Win";
+                            }
+                            else win = "White Player Win";
+                            endGameMenu(win, gameFrame);
+                            return;
+                        }
                         if (isRightMouseButton(e)) {
                             sourceTile = null;
                             destinationTile = null;
@@ -123,6 +132,9 @@ public class Table {
                                 if (transition.getMoveStatus().isDone()) {
                                     Sound.playSound("src/art/move.wav");
                                     chessBoard = transition.getTransitionBoard();
+                                    if (chessBoard.currentPlayer().isInCheckMate()) {
+
+                                    }
                                 }
                                 sourceTile = null;
                                 destinationTile = null;
@@ -157,8 +169,14 @@ public class Table {
                     }
 
                 });
-            }
-
+//            if (chessBoard.currentPlayer().isInCheckMate()) {
+//                String win;
+//                if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
+//                    win = "Black Player Win";
+//                }
+//                else win = "White Player Win";
+//                endGameMenu(win);
+//            }
             validate();
         }
 
@@ -231,5 +249,9 @@ public class Table {
 
             }
         }
+    }
+
+    public void endGameMenu(String win, JFrame gameFrame) {
+        Menu menu = new Menu(win, gameFrame);
     }
 }
