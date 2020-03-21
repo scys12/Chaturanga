@@ -67,6 +67,7 @@ public class Menu  {
                     Chaturanga chaturanga = new Chaturanga();
                     initFx(chaturanga);
                 });
+                gameFrame.setVisible(false);
                 window.setVisible(false);
             }
         });
@@ -74,10 +75,16 @@ public class Menu  {
         restartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                window.setVisible(false);
-                gameFrame.setVisible(false);
-                Table table = new Table();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        window.setVisible(false);
+                        gameFrame.setVisible(false);
+                        Table.get(1).show();
+                    }
+                });
             }
+
         });
 
         titleNamePanel.add(titleNameLabel);

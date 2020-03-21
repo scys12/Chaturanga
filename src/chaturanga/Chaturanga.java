@@ -73,7 +73,19 @@ public class Chaturanga extends Application{
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Table table = new Table();
+                    Table.get(1).show();
+                }
+            });
+            a.stop();
+            primaryStage.hide();
+        });
+
+        MenuItem vsComp = new MenuItem("NEW GAME[VS COMPUTER]");
+        vsComp.setOnMouseClicked(event -> {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    Table.get(2).show();
                 }
             });
             a.stop();
@@ -82,6 +94,7 @@ public class Chaturanga extends Application{
 
         MenuBox menu = new MenuBox(
                 vsHuman,
+                vsComp,
                 itemExit);
         menu.setTranslateX(100);
         menu.setTranslateY(300);

@@ -64,6 +64,10 @@ public abstract class Piece {
         return this.pieceType;
     }
 
+    public int getPieceValue() {
+        return this.pieceType.getPieceValue();
+    }
+
     public abstract Collection<Move> calculateLegalMoves (final Board board);
 
     public abstract Collection<Move> calculateLegalJumpedMoves(final Board board, final int oldPiecePosition, Map<Integer,Boolean> isVisited);
@@ -71,17 +75,26 @@ public abstract class Piece {
     public abstract Piece movePiece(Move move);//return a new piece that will update to move to its destination
 
     public enum PieceType {
-        PAWN("P" );
+        PAWN(1,"P" );
 
         private String pieceName;
+        private int pieceValue;
 
-        PieceType(final String pieceName) {
+        PieceType(final int pieceValue,final String pieceName) {
             this.pieceName = pieceName;
+            this.pieceValue = pieceValue;
         }
 
         @Override
         public String toString() {
             return this.pieceName;
+        }
+
+        public int getPieceValue() {
+            return this.pieceValue;
+        }
+        public void setPieceValue(int pieceValue) {
+            this.pieceValue = pieceValue;
         }
     }
 }

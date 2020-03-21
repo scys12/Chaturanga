@@ -1,12 +1,17 @@
 package chaturanga.gui;
 
+import chaturanga.Alliance;
 import chaturanga.board.Board;
 import chaturanga.board.BoardUtils;
 import chaturanga.board.Move;
 import chaturanga.board.Tile;
 import chaturanga.piece.Piece;
 import chaturanga.player.MoveTransition;
+import chaturanga.player.Player;
+import chaturanga.player.ai.MiniMax;
+import chaturanga.player.ai.MoveStrategy;
 import chaturanga.sound.Sound;
+import javafx.scene.control.Tab;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,20 +19,23 @@ import java.awt.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
-public class Table {
+public class Table extends Observable {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
     private Board chessBoard;
+
+    private PlayerType whitePlayerType;
+    private PlayerType blackPlayerType;
 
     private Tile sourceTile;
     private Tile destinationTile;
@@ -43,29 +51,49 @@ public class Table {
 
     private final Color lightTileColor = Color.decode("#FFFACD");
     private final Color darkTileColor = Color.decode("#593E1A");
-    private final Color hoverLightTileColor=Color.decode("#b59565");
-    private final Color hoverDarkTileColor=Color.decode("#bfa071");
+    private final Color hoverLightTileColor = Color.decode("#b59565");
+    private final Color hoverDarkTileColor = Color.decode("#bfa071");
 
-    public Table() {
+    public static int code=2;
+    private Move computerMove;
+    private static final Table INSTANCE = new Table();
 
+    private Table() {
+        code=getCode();
+        System.out.println(code);
         this.gameFrame = new JFrame("Chaturanga");
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.chessBoard = Board.createStandardBoard();
         this.boardPanel = new BoardPanel();
+        this.addObserver(new TableGameAIWatcher());
         Sound.playContinuous("src/art/main-game-back-sound.wav");
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPlayerType();
+    }
+
+    public static Table get(final int options) {
+        code=options;
+        return INSTANCE;
+    }
+
+    public void show() {
+        Table.get(code).getBoardPanel().drawBoard(Table.get(code).getGameBoard());
+    }
+
+    private BoardPanel getBoardPanel() {
+        return this.boardPanel;
     }
 
     private class BoardPanel extends JPanel {
         final List<TilePanel> boardTiles;
 
         BoardPanel() {
-            super(new GridLayout(8,8));
+            super(new GridLayout(8, 8));
             this.boardTiles = new ArrayList<>();
             for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
                 final TilePanel tilePanel = new TilePanel(this, i);
@@ -77,9 +105,9 @@ public class Table {
 
         }
 
-        public void drawBoard(final Board board){
+        public void drawBoard(final Board board) {
             removeAll();
-            for(final TilePanel tilePanel : boardTiles){
+            for (final TilePanel tilePanel : boardTiles) {
                 tilePanel.drawTile(board);
                 add(tilePanel);
             }
@@ -87,10 +115,109 @@ public class Table {
             repaint();
         }
     }
+    public static int getCode() {
+        return code;
+    }
+
+    private Board getGameBoard() {
+        return this.chessBoard;
+    }
+
+    private static class TableGameAIWatcher implements Observer {
+        @Override
+
+        public void update(final Observable o, final Object arg) {
+            System.out.println(code+"a");
+            if (Table.get(code).isAIPlayer(Table.get(code).getGameBoard().currentPlayer()) && !Table.get(code).getGameBoard().currentPlayer().isInCheckMate()) {
+                final AIThinkTank thinkTank = new AIThinkTank();
+                thinkTank.execute();
+            }//create AI and execute it
+
+            if (Table.get(code).getGameBoard().currentPlayer().isInCheckMate()) {
+                JOptionPane.showMessageDialog(Table.get(code).getBoardPanel(),
+                        "Game Over: Player " + Table.get(code).getGameBoard().currentPlayer() + " is in checkmate!", "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    private static class AIThinkTank extends SwingWorker<Move, String> {
+        private AIThinkTank() {
+
+        }
+
+        @Override
+        protected void done() {
+            try {
+                final Move bestMove = get();
+                Table.get(code).updateComputerMove(bestMove);
+                Table.get(code).updateGameBoard(Table.get(code).getGameBoard().currentPlayer().makeMove(bestMove).getTransitionBoard());
+                Table.get(code).getBoardPanel().drawBoard(Table.get(code).getGameBoard());
+                Table.get(code).moveMadeUpdate(PlayerType.COMPUTER);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected Move doInBackground() throws Exception {
+            final MoveStrategy miniMax = new MiniMax(2);
+            final Move bestMove = miniMax.execute(Table.get(code).getGameBoard());
+            return bestMove;
+        }
+    }
+
+    private void updateComputerMove(final Move move) {
+        this.computerMove = move;
+    }
+
+
+
+    private void updateGameBoard(final Board board) {
+        this.chessBoard = board;
+    }
+
+
+
+    public void setPlayerType() {
+        if (code==2){
+            whitePlayerType = PlayerType.HUMAN;
+            blackPlayerType = PlayerType.COMPUTER;
+        } else if(code==1){
+            whitePlayerType = blackPlayerType = PlayerType.HUMAN;
+        }
+    }
+
+    public boolean isAIPlayer(final Player player) {
+        System.out.println("b");
+        if (player.getAlliance() == Alliance.WHITE) {
+            return getWhitePlayerType() == PlayerType.COMPUTER;
+        }
+        return getBlackPlayerType() == PlayerType.COMPUTER;
+    }
+
+    public PlayerType getWhitePlayerType() {
+        return this.whitePlayerType;
+    }
+
+    public PlayerType getBlackPlayerType() {
+        return this.blackPlayerType;
+    }
+
+    private void moveMadeUpdate(final PlayerType playerType) {
+        setChanged();
+        notifyObservers(playerType);
+    }
+
+    enum PlayerType {
+        HUMAN,
+        COMPUTER
+    }
 
     private class TilePanel extends JPanel {
         private final int tileId;
-
         TilePanel(final BoardPanel boardPanel, final int tileId) {
             super(new GridBagLayout());
             this.tileId = tileId;
@@ -98,77 +225,80 @@ public class Table {
             assignTileColor(lightTileColor, darkTileColor);
 
             assignTilePieceIcon(chessBoard);
-                addMouseListener(new MouseListener() {
-                    @Override
-                    public void mouseClicked(final MouseEvent e) {
+            addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(final MouseEvent e) {
+                    if(Table.get(code).isAIPlayer(Table.get(code).getGameBoard().currentPlayer()) ||
+                            BoardUtils.isEndGame(Table.get(code).getGameBoard())) {
+                        return;
+                    }
+                    if (isRightMouseButton(e)) {
+                        sourceTile = null;
+                        destinationTile = null;
+                        humanMovedPiece = null;
+                    } else if (isLeftMouseButton(e)) {
 
-                        if (chessBoard.currentPlayer().isInCheckMate()) {
-                            Sound.playSound("src/art/win.wav");
-                            String win;
-                            if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
-                                win = "Black Player Win";
+                        if (sourceTile == null) {
+                            sourceTile = chessBoard.getTile(tileId);
+                            humanMovedPiece = sourceTile.getPiece();
+                            if (humanMovedPiece == null) {
+                                sourceTile = null;
                             }
-                            else win = "White Player Win";
-                            endGameMenu(win, gameFrame);
-                            return;
-                        }
-                        if (isRightMouseButton(e)) {
+                            Sound.playSound("src/art/clickpawn.wav");
+                        } else {
+                            destinationTile = chessBoard.getTile(tileId);
+                            final Move move = Move.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
+                            final MoveTransition transition = chessBoard.currentPlayer().makeMove(move);
+                            if (transition.getMoveStatus().isDone()) {
+                                Sound.playSound("src/art/move.wav");
+                                chessBoard = transition.getTransitionBoard();
+                            }
                             sourceTile = null;
                             destinationTile = null;
                             humanMovedPiece = null;
-                        }else if(isLeftMouseButton(e)) {
-
-                            if (sourceTile == null) {
-                                sourceTile = chessBoard.getTile(tileId);
-                                humanMovedPiece = sourceTile.getPiece();
-                                if (humanMovedPiece == null) {
-                                    sourceTile = null;
-                                }
-                                Sound.playSound("src/art/clickpawn.wav");
-                            } else {
-                                destinationTile = chessBoard.getTile(tileId);
-                                final Move move = Move.MoveFactory.createMove(chessBoard, sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
-                                final MoveTransition transition = chessBoard.currentPlayer().makeMove(move);
-                                if (transition.getMoveStatus().isDone()) {
-                                    Sound.playSound("src/art/move.wav");
-                                    chessBoard = transition.getTransitionBoard();
-                                    if (chessBoard.currentPlayer().isInCheckMate()) {
-
-                                    }
-                                }
-                                sourceTile = null;
-                                destinationTile = null;
-                                humanMovedPiece = null;
-                            }
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    boardPanel.drawBoard(chessBoard);
-                                }
-                            });
                         }
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (chessBoard.currentPlayer().isInCheckMate()) {
+                                    Sound.playSound("src/art/win.wav");
+                                    String win;
+                                    if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
+                                        win = "Black Player Win";
+                                    } else win = "White Player Win";
+                                    endGameMenu(win, gameFrame);
+                                }
+                                if (isAIPlayer(chessBoard.currentPlayer())) {
+                                    System.out.println("m");
+                                    Table.get(code).moveMadeUpdate(PlayerType.HUMAN);
+                                }
+                                boardPanel.drawBoard(chessBoard);
+                            }
+                        });
                     }
-                    @Override
-                    public void mousePressed(MouseEvent e) {
+                }
 
-                    }
+                @Override
+                public void mousePressed(MouseEvent e) {
 
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
+                }
 
-                    }
+                @Override
+                public void mouseReleased(MouseEvent e) {
 
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
+                }
 
-                    }
+                @Override
+                public void mouseEntered(MouseEvent e) {
 
-                    @Override
-                    public void mouseExited(MouseEvent e) {
+                }
 
-                    }
+                @Override
+                public void mouseExited(MouseEvent e) {
 
-                });
+                }
+
+            });
 //            if (chessBoard.currentPlayer().isInCheckMate()) {
 //                String win;
 //                if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
@@ -180,7 +310,7 @@ public class Table {
             validate();
         }
 
-        public void drawTile(final Board board){
+        public void drawTile(final Board board) {
             assignTileColor(lightTileColor, darkTileColor);
             assignTilePieceIcon(board);
             highlightLegals(board);
@@ -193,8 +323,8 @@ public class Table {
             if (board.getTile(this.tileId).isTileOccupied()) {
 
                 try {
-                    final BufferedImage image = ImageIO.read(new File(defaultPieceImagesPath + board.getTile(this.tileId).getPiece().getPieceAlliance().toString().substring(0, 1) +""+
-                            board.getTile(this.tileId).getPiece().toString()+".gif.png"));
+                    final BufferedImage image = ImageIO.read(new File(defaultPieceImagesPath + board.getTile(this.tileId).getPiece().getPieceAlliance().toString().substring(0, 1) + "" +
+                            board.getTile(this.tileId).getPiece().toString() + ".gif.png"));
                     add(new JLabel(new ImageIcon(image)));
                 } catch (IOException e) {
                     e.printStackTrace();

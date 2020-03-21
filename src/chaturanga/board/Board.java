@@ -21,7 +21,6 @@ public class Board {
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
     private final Player currentPlayer;
-    private final Player aiPlayer;
 
     private final boolean whiteCheckMate;
     private final boolean blackCheckMate;
@@ -39,7 +38,7 @@ public class Board {
 
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
-        this.aiPlayer = this.blackPlayer;
+
         //hasil dari next move maker berupa Alliance.WHITE/BLACK nantinya di class Alliance1 direturn
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
@@ -54,10 +53,6 @@ public class Board {
 
     public Player blackPlayer() {
         return this.blackPlayer;
-    }
-
-    public Player aiPlayer() {
-        return this.aiPlayer;
     }
 
     public Player whitePlayer() {

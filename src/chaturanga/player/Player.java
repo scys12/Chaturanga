@@ -40,7 +40,7 @@ public abstract class Player {
                 blackInRightPlace = false;
             }
         }
-        System.out.println(blackInRightPlace+"bw"+whiteInRightPlace);
+//        System.out.println(blackInRightPlace+"bw"+whiteInRightPlace);
         if (blackInRightPlace || whiteInRightPlace) {
             return true;
         }
