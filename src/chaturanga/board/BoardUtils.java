@@ -45,4 +45,16 @@ public class BoardUtils {
     public static boolean isEndGame(final Board board) {
         return board.currentPlayer().isInCheckMate();
     }
+
+    public static int checkRow(final int coordinate) {
+        if(coordinate<=3 && coordinate >=0) return 1;
+        else if (coordinate<=7 && coordinate >=4) return 2;
+        else if (coordinate<=11 && coordinate >=8) return 3;
+        else if (coordinate<=15 && coordinate >=12) return 4;
+        else if (coordinate<=19 && coordinate >=16) return 5;
+        else if (coordinate<=23 && coordinate >=20) return 6;
+        else if (coordinate<=27 && coordinate >=24) return 7;
+        else if(coordinate<=31 && coordinate >=28) return 8;
+        else return 0;
+    }
 }

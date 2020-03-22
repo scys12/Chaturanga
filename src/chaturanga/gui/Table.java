@@ -33,6 +33,7 @@ public class Table extends Observable {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
     private Board chessBoard;
+    private Menu menu;
 
     private PlayerType whitePlayerType;
     private PlayerType blackPlayerType;
@@ -67,13 +68,15 @@ public class Table extends Observable {
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.chessBoard = Board.createStandardBoard();
         this.boardPanel = new BoardPanel();
-        this.addObserver(new TableGameAIWatcher());
+
         Sound.playContinuous("src/art/main-game-back-sound.wav");
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setVisible(true);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPlayerType();
+        this.menu = new Menu(gameFrame);
+        this.addObserver(new TableGameAIWatcher(menu));
     }
 
     public static Table get(final int options) {
@@ -124,19 +127,27 @@ public class Table extends Observable {
     }
 
     private static class TableGameAIWatcher implements Observer {
+        private Menu menu;
+
+        public TableGameAIWatcher(Menu menu) {
+            this.menu = menu;
+        }
+
         @Override
 
         public void update(final Observable o, final Object arg) {
-            System.out.println(code+"a");
             if (Table.get(code).isAIPlayer(Table.get(code).getGameBoard().currentPlayer()) && !Table.get(code).getGameBoard().currentPlayer().isInCheckMate()) {
                 final AIThinkTank thinkTank = new AIThinkTank();
                 thinkTank.execute();
             }//create AI and execute it
 
             if (Table.get(code).getGameBoard().currentPlayer().isInCheckMate()) {
-                JOptionPane.showMessageDialog(Table.get(code).getBoardPanel(),
-                        "Game Over: Player " + Table.get(code).getGameBoard().currentPlayer() + " is in checkmate!", "Game Over",
-                        JOptionPane.INFORMATION_MESSAGE);
+                Sound.playSound("src/art/win.wav");
+                String win;
+                if (Table.get(code).getGameBoard().currentPlayer().getOpponent().getAlliance().isBlack()) {
+                    win = "You Lose";
+                } else win = "You Win";
+                menu.show(win);
             }
         }
     }
@@ -191,7 +202,6 @@ public class Table extends Observable {
     }
 
     public boolean isAIPlayer(final Player player) {
-        System.out.println("b");
         if (player.getAlliance() == Alliance.WHITE) {
             return getWhitePlayerType() == PlayerType.COMPUTER;
         }
@@ -266,10 +276,9 @@ public class Table extends Observable {
                                     if (chessBoard.currentPlayer().getOpponent().getAlliance().isBlack()) {
                                         win = "Black Player Win";
                                     } else win = "White Player Win";
-                                    endGameMenu(win, gameFrame);
+                                    menu.show(win);
                                 }
                                 if (isAIPlayer(chessBoard.currentPlayer())) {
-                                    System.out.println("m");
                                     Table.get(code).moveMadeUpdate(PlayerType.HUMAN);
                                 }
                                 boardPanel.drawBoard(chessBoard);
@@ -379,9 +388,5 @@ public class Table extends Observable {
 
             }
         }
-    }
-
-    public void endGameMenu(String win, JFrame gameFrame) {
-        Menu menu = new Menu(win, gameFrame);
     }
 }

@@ -4,6 +4,11 @@ import chaturanga.board.Board;
 import chaturanga.board.Move;
 import chaturanga.player.MoveTransition;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+
 /*
 heuristic :
         semakin panjang jaraknya,
@@ -27,31 +32,45 @@ public class MiniMax implements MoveStrategy {
 
     @Override
     public Move execute(Board board) {
-        final long startTime = System.currentTimeMillis();
         Move bestMove = null;
         int highestSeenValue = Integer.MIN_VALUE;
         int lowestSeenValue = Integer.MAX_VALUE;
         int currentValue;
-
-        System.out.println(board.currentPlayer() + "thinking with depth = " + this.searchDepth);
+        List<Move> bestMoveAI = new ArrayList<>();
         int numMoves = board.currentPlayer().getLegalMoves().size();
-        System.out.println(board.currentPlayer() + "thinking with depth = " + numMoves);
         for (final Move move : board.currentPlayer().getLegalMoves()) {
             final MoveTransition moveTransition = board.currentPlayer().makeMove(move);
             if (moveTransition.getMoveStatus().isDone()) {
                 currentValue = board.currentPlayer().getAlliance().isWhite() ? min(move,move ,moveTransition.getTransitionBoard(), this.searchDepth - 1,Integer.MIN_VALUE,Integer.MAX_VALUE) : max(move,move,moveTransition.getTransitionBoard(), this.searchDepth - 1,Integer.MIN_VALUE,Integer.MAX_VALUE);
                 if (board.currentPlayer().getAlliance().isWhite() && currentValue >= highestSeenValue) {
+                    if (currentValue > highestSeenValue) {
+                        bestMoveAI.clear();
+                        bestMoveAI.add(move);
+                    }
+                    else{
+                        bestMoveAI.add(move);
+                    }
                     highestSeenValue = currentValue;
-                    bestMove = move;
                 } else if (board.currentPlayer().getAlliance().isBlack() && currentValue<=lowestSeenValue) {
-                    System.out.println("pr");
+                    if (currentValue < lowestSeenValue) {
+                        bestMoveAI.clear();
+                        bestMoveAI.add(move);
+                    }
+                    else{
+                        bestMoveAI.add(move);
+                    }
                     lowestSeenValue = currentValue;
-                    bestMove = move;
                 }
             }
         }
-        final long executionTime = System.currentTimeMillis() - startTime;
+        bestMove = getRandomMove(bestMoveAI);
         return bestMove;
+    }
+
+    private Move getRandomMove(List<Move> bestMoveAI) {
+        Random random = new Random();
+        Move move = bestMoveAI.get(random.nextInt(bestMoveAI.size()));
+        return move;
     }
 
     public int min(final Move blackMove,final Move whiteMove, final Board board, final int depth, int alpha, int beta) {

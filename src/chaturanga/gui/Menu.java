@@ -22,7 +22,7 @@ public class Menu  {
     Font normalFont = new Font("Times New Roman", Font.PLAIN,30);
     private static javafx.scene.text.Font font;
 
-    public Menu(String win, JFrame gameFrame) {
+    public Menu(JFrame gameFrame) {
 
         window = new JFrame();
         window.setSize(500,350);
@@ -30,15 +30,12 @@ public class Menu  {
         window.getContentPane().setBackground(Color.white);
         window.setLayout(null);
         window.setLocationRelativeTo(null);
-        window.setVisible(true);
+//        window.setVisible(true);
         container = window.getContentPane();
 
         titleNamePanel = new JPanel();
         titleNamePanel.setBounds(0,0, 500, 350);
         titleNamePanel.setBackground(Color.decode("#593E1A"));
-        titleNameLabel = new JLabel(win);
-        titleNameLabel.setForeground(Color.decode("#FFFACD"));
-        titleNameLabel.setFont(titleFont);
 
         restartButtonPanel = new JPanel();
         restartButtonPanel.setBounds(10, 200, 200, 55);
@@ -86,14 +83,22 @@ public class Menu  {
             }
 
         });
-
-        titleNamePanel.add(titleNameLabel);
         restartButtonPanel.add(restartButton);
         exitButtonPanel.add(exitButton);
         container.add(exitButtonPanel);
         container.add(restartButtonPanel);
+    }
+
+    public void show(String win) {
+        titleNameLabel = new JLabel(win);
+        titleNameLabel.setForeground(Color.decode("#FFFACD"));
+        titleNameLabel.setFont(titleFont);
+
+        titleNamePanel.add(titleNameLabel);
+
         container.add(titleNamePanel);
 
+        this.window.setVisible(true);
     }
 
     private void initFx(Chaturanga chaturanga) {
