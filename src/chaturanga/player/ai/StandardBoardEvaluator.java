@@ -32,7 +32,7 @@ public final class StandardBoardEvaluator implements BoardEvaluator {
         }
         int firstElement = pieceRowPosition.poll();
         int secondElement = pieceRowPosition.poll();
-        if ((secondElement-firstElement) >= 4) return BOUNDS_POSITION;
+        if ((secondElement-firstElement) >= 3) return BOUNDS_POSITION;
         else return 0;
     }
 

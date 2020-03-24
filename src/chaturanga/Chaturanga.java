@@ -1,5 +1,6 @@
 package chaturanga;
 
+import chaturanga.gui.MainTable;
 import chaturanga.gui.Menu;
 import chaturanga.gui.Table;
 import chaturanga.sound.Sound;
@@ -73,7 +74,8 @@ public class Chaturanga extends Application{
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Table.get(1).show();
+                    MainTable mainTable = new MainTable(1);
+                    mainTable.show();
                 }
             });
             a.stop();
@@ -85,7 +87,8 @@ public class Chaturanga extends Application{
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    Table.get(2).show();
+                    MainTable mainTable = new MainTable(2);
+                    mainTable.show();
                 }
             });
             a.stop();

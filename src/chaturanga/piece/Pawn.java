@@ -20,9 +20,7 @@ public class Pawn extends Piece {
     public Collection<Move> calculateLegalMoves(Board board) {
         //menghitung berapa banyak move yang boleh dilakukan suatu pion
         final List<Move> legalMoves = new ArrayList<>();
-        boolean canJumped;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
-            canJumped = true;
             final int candidateDestinationCoordinate =  this.piecePosition + currentCandidateOffset;
 
             if (isFirstColumnExclusion(this.piecePosition, currentCandidateOffset) ||

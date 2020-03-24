@@ -40,7 +40,6 @@ public abstract class Player {
                 blackInRightPlace = false;
             }
         }
-//        System.out.println(blackInRightPlace+"bw"+whiteInRightPlace);
         if (blackInRightPlace || whiteInRightPlace) {
             return true;
         }
@@ -68,7 +67,6 @@ public abstract class Player {
         if (!isMoveLegal(move)) {
             return new MoveTransition(this.board, move, MoveStatus.ILLEGAL_MOVE);
         }
-
         final Board transitionBoard = move.execute();
         final boolean checkPositionForCheckMate = Player.getAllPosition(this.board, Alliance.BLACK, Alliance.WHITE);
         if (checkPositionForCheckMate) {

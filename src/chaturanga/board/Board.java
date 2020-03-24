@@ -20,7 +20,7 @@ public class Board {
 
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
-    private final Player currentPlayer;
+    private Player currentPlayer;
 
     private final boolean whiteCheckMate;
     private final boolean blackCheckMate;
@@ -65,6 +65,10 @@ public class Board {
 
     public Player currentPlayer() {
         return this.currentPlayer;
+    }
+
+    public void setPlayer(final Player player) {
+        this.currentPlayer = player;
     }
 
     public Collection<Piece> getWhitePieces() {

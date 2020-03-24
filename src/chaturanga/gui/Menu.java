@@ -22,7 +22,7 @@ public class Menu  {
     Font normalFont = new Font("Times New Roman", Font.PLAIN,30);
     private static javafx.scene.text.Font font;
 
-    public Menu(JFrame gameFrame) {
+    public Menu(final int option, JFrame gameFrame) {
 
         window = new JFrame();
         window.setSize(500,350);
@@ -77,7 +77,8 @@ public class Menu  {
                     public void run() {
                         window.setVisible(false);
                         gameFrame.setVisible(false);
-                        Table.get(1).show();
+                        MainTable mainTable = new MainTable(option);
+                        mainTable.show();
                     }
                 });
             }
