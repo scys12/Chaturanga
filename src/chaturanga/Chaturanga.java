@@ -38,6 +38,7 @@ public class Chaturanga extends Application{
     private static Font font;
     @Override
     public void start(Stage primaryStage){
+        Platform.setImplicitExit(false);
         primaryStage.setResizable(false);
         Pane root = new Pane();
         root.setPrefSize(860,  700);
@@ -164,13 +165,11 @@ public class Chaturanga extends Application{
 
 
             setOnMouseExited(event -> {
-//                Sound.hover.play();
                 bg.setFill(Color.BLACK);
                 text.setFill(Color.DARKGREY);
             });
 
             setOnMousePressed(event -> {
-//                Sound.playSound("/clickmenu.wav");
                 Sound.click.play();
                 bg.setFill(Color.DARKVIOLET);
             });

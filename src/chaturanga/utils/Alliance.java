@@ -1,4 +1,4 @@
-package chaturanga;
+package chaturanga.utils;
 
 import chaturanga.player.BlackPlayer;
 import chaturanga.player.Player;

@@ -1,40 +1,52 @@
 package chaturanga.gui;
 
-import chaturanga.Alliance;
-import chaturanga.board.Board;
-import chaturanga.board.BoardUtils;
 import chaturanga.board.Move;
-import chaturanga.board.Tile;
 import chaturanga.gui.Table.PlayerType;
-import chaturanga.piece.Piece;
-import chaturanga.player.MoveTransition;
-import chaturanga.player.Player;
 import chaturanga.player.ai.MiniMax;
 import chaturanga.player.ai.MoveStrategy;
 import chaturanga.sound.Sound;
+import chaturanga.utils.TimeCounter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 
 public class MainTable {
+    private TimeCounter timeCounter;
     private Table table;
     private Menu menu;
     private SettingPanel settingPanel;
-    public static final String AI_WIN = "YOU LOSE";
-    public static final String AI_LOSE = "YOU WIN";
+    private static final String AI_WIN = "YOU LOSE";
+    private static final String AI_LOSE = "YOU WIN";
+    private TimerTask timerTask;
+    private Timer timer;
+    private int secondPassed = 0;
 
     public MainTable(final int option) {
         this.table = new Table(option);
+        this.timeCounter = new TimeCounter(0,0,0);
         this.settingPanel = new SettingPanel(this.table,option);
         table.getGameFrame().add(settingPanel.getBoardPanel(), BorderLayout.CENTER);
         this.menu = new Menu(option,this.table.getGameFrame());
         table.addObserver(new TableGameAIWatcher());
         table.getGameFrame().setVisible(true);
+        Sound.main_game_back_sound.loop();
+        this.timer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                secondPassed++;
+//                if (secondPassed%10==0) {
+                System.out.println(secondPassed);
+//                }
+            }
+        };
     }
 
     public void show() {
+        timer.scheduleAtFixedRate(timerTask,10000, 10000);
         settingPanel.getBoardPanel().drawBoard(table.getGameBoard());
     }
 
@@ -53,7 +65,6 @@ public class MainTable {
                 Sound.main_game_back_sound.stop();
 //                Sound.playSound("/win.wav");
                 Sound.win.play();
-                String win;
                 if (table.getGameBoard().currentPlayer().getOpponent().getAlliance().isBlack()) {
                     menu.show(AI_WIN);
                 } else menu.show(AI_LOSE);

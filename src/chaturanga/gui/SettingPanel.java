@@ -112,7 +112,6 @@ public class SettingPanel{
                             final Move move = Move.MoveFactory.createMove(table.getGameBoard(), sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
                             final MoveTransition transition = table.getGameBoard().currentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
-//                                Sound.playSound("src/art/move.wav");
                                 Sound.move.play();
                                 table.setBoard(transition.getTransitionBoard());
                             }
@@ -124,7 +123,6 @@ public class SettingPanel{
                             @Override
                             public void run() {
                                 if (table.getGameBoard().currentPlayer().isInCheckMate() && !table.isAIPlayer(table.getGameBoard().blackPlayer())) {
-//                                    Sound.playSound("src/art/win.wav");
                                     Sound.main_game_back_sound.stop();
                                     Sound.win.play();
                                     if (table.getGameBoard().currentPlayer().getOpponent().getAlliance().isBlack()) {

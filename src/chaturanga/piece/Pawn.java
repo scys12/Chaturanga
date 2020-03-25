@@ -1,6 +1,6 @@
 package chaturanga.piece;
 
-import chaturanga.Alliance;
+import chaturanga.utils.Alliance;
 import chaturanga.board.*;
 import chaturanga.board.Move.MajorMove;
 import com.google.common.collect.ImmutableList;
@@ -43,7 +43,6 @@ public class Pawn extends Piece {
     public Collection<Move> calculateLegalJumpedMoves(Board board, int oldPiecePosition, Map<Integer,Boolean> isVisited) {
         if (!isVisited.containsKey(this.piecePosition))  isVisited.put(this.piecePosition, true);
         final List<Move> jumpedMove = new ArrayList<>();
-        int countJumped = 0;
         for (final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
             final int blockedPiecePosition = oldPiecePosition + currentCandidateOffset;
 

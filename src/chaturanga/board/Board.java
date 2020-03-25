@@ -1,6 +1,6 @@
 package chaturanga.board;
 
-import chaturanga.Alliance;
+import chaturanga.utils.Alliance;
 import chaturanga.piece.Pawn;
 import chaturanga.piece.Piece;
 import chaturanga.player.BlackPlayer;
@@ -22,16 +22,10 @@ public class Board {
     private final BlackPlayer blackPlayer;
     private Player currentPlayer;
 
-    private final boolean whiteCheckMate;
-    private final boolean blackCheckMate;
-
     public Board(final Builder builder) {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
-
-        this.whiteCheckMate = whiteCheckMate(this.gameBoard, Alliance.WHITE);
-        this.blackCheckMate = blackCheckMate(this.gameBoard, Alliance.BLACK);
 
         final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
@@ -41,14 +35,6 @@ public class Board {
 
         //hasil dari next move maker berupa Alliance.WHITE/BLACK nantinya di class Alliance1 direturn
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
-    }
-
-    public boolean getWhiteCheckMate() {
-        return this.whiteCheckMate;
-    }
-
-    public boolean getBlackCheckMate() {
-        return this.blackCheckMate;
     }
 
     public Player blackPlayer() {
@@ -85,37 +71,6 @@ public class Board {
         return ImmutableList.copyOf(legalMoves);
     }
 
-    private static boolean whiteCheckMate(final List<Tile> gameBoard, final Alliance alliance) {
-        boolean isCheckMate = true;
-        for (final Tile tile : gameBoard) {
-            int tileCoordinate = tile.getTileCoordinate();
-            if (!tile.isTileOccupied() && tileCoordinate <= 7) {
-                isCheckMate = false;
-            } else if (tile.isTileOccupied() && tileCoordinate > 7) {
-                final Piece piece = tile.getPiece();
-                if (piece.getPieceAlliance() == alliance) {
-                    isCheckMate = false;
-                }
-            }
-        }
-        return isCheckMate;
-    }
-
-    private static boolean blackCheckMate(final List<Tile> gameBoard, final Alliance alliance) {
-        boolean isCheckMate = true;
-        for (final Tile tile : gameBoard) {
-            int tileCoordinate = tile.getTileCoordinate();
-            if (!tile.isTileOccupied() && tileCoordinate >= 24) {
-                isCheckMate = false;
-            } else if (tile.isTileOccupied() && tileCoordinate < 24) {
-                final Piece piece = tile.getPiece();
-                if (piece.getPieceAlliance() == alliance) {
-                    isCheckMate = false;
-                }
-            }
-        }
-        return isCheckMate;
-    }
     private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Alliance alliance) {
         //ngehitung berapa banyak pion yang masih aktif di papan catur dan dilist
         final List<Piece> activePieces = new ArrayList<>();

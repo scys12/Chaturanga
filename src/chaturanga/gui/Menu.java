@@ -29,8 +29,8 @@ public class Menu  {
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.getContentPane().setBackground(Color.white);
         window.setLayout(null);
+        window.setResizable(false);
         window.setLocationRelativeTo(null);
-//        window.setVisible(true);
         container = window.getContentPane();
 
         titleNamePanel = new JPanel();

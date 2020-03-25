@@ -21,7 +21,7 @@ public final class StandardBoardEvaluator implements BoardEvaluator {
     }
 
     private int scorePlayer(final Move move,final Board board, final Player player, final int depth) {
-        return rowScore(move)+checkMate(player)+checkPosition(move)/*+*//*boundsPosition(player,move)*/;
+        return rowScore(move)+checkMate(player)+checkPosition(move)+boundsPosition(player,move);
     }
 
     private int boundsPosition(Player player, Move move) {
@@ -37,10 +37,8 @@ public final class StandardBoardEvaluator implements BoardEvaluator {
     }
 
     private int rowScore(final Move move) {
-//      int whiteLength = whiteMove.getDestinationCoordinate() - whiteMove.getCurrentCoordinate();
         int destinationRow = BoardUtils.checkRow(move.getDestinationCoordinate());
         int currentRow = BoardUtils.checkRow(move.getCurrentCoordinate());
-//        int blackLength = blackMove.getDestinationCoordinate() - blackMove.getCurrentCoordinate();
         return destinationRow-currentRow;
     }
 

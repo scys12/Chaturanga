@@ -1,6 +1,6 @@
 package chaturanga.piece;
 
-import chaturanga.Alliance;
+import chaturanga.utils.Alliance;
 import chaturanga.board.Board;
 import chaturanga.board.Move;
 
@@ -28,6 +28,14 @@ public abstract class Piece {
     }
 
     @Override
+    public int hashCode() {
+        int result = pieceType.hashCode();
+        result = 31 * result + pieceAlliance.hashCode();
+        result = 31 * result + piecePosition;
+        return result;
+    }
+
+    @Override
     public boolean equals(final Object other) {
         if (this == other) {
             return true;
@@ -38,14 +46,6 @@ public abstract class Piece {
         final Piece otherPiece = (Piece) other;
         return piecePosition == otherPiece.getPiecePosition() && pieceType == otherPiece.getPieceType() &&
                 pieceAlliance == otherPiece.getPieceAlliance();
-    }
-
-    @Override
-    public int hashCode() {
-        int result = pieceType.hashCode();
-        result = 31 * result + pieceAlliance.hashCode();
-        result = 31 * result + piecePosition;
-        return result;
     }
 
     public int getPiecePosition() {

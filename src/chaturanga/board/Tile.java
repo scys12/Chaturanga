@@ -68,11 +68,5 @@ public abstract class Tile {
         public Piece getPiece() {
             return this.pieceOnTile;
         }
-
-        @Override
-        public String toString() {
-            return getPiece().getPieceAlliance().isBlack() ? getPiece().toString().toLowerCase() :
-                    getPiece().toString();
-        }
     }
 }
