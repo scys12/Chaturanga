@@ -105,13 +105,15 @@ public class SettingPanel{
                             if (humanMovedPiece == null) {
                                 sourceTile = null;
                             }
-                            Sound.playSound("src/art/clickpawn.wav");
+//                            Sound.playSound("src/art/clickpawn.wav");
+                            Sound.clickpawn.play();
                         } else {
                             destinationTile = table.getGameBoard().getTile(tileId);
                             final Move move = Move.MoveFactory.createMove(table.getGameBoard(), sourceTile.getTileCoordinate(), destinationTile.getTileCoordinate());
                             final MoveTransition transition = table.getGameBoard().currentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
-                                Sound.playSound("src/art/move.wav");
+//                                Sound.playSound("src/art/move.wav");
+                                Sound.move.play();
                                 table.setBoard(transition.getTransitionBoard());
                             }
                             sourceTile = null;
@@ -122,8 +124,9 @@ public class SettingPanel{
                             @Override
                             public void run() {
                                 if (table.getGameBoard().currentPlayer().isInCheckMate() && !table.isAIPlayer(table.getGameBoard().blackPlayer())) {
-                                    Sound.playSound("src/art/win.wav");
-                                    String win;
+//                                    Sound.playSound("src/art/win.wav");
+                                    Sound.main_game_back_sound.stop();
+                                    Sound.win.play();
                                     if (table.getGameBoard().currentPlayer().getOpponent().getAlliance().isBlack()) {
                                         menu.show(BLACK_WIN);
                                     } else menu.show(WHITE_WIN);

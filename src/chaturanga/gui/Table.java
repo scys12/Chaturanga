@@ -61,8 +61,9 @@ public class Table extends Observable {
         this.gameFrame.setLayout(new BorderLayout());
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        Sound.playContinuous("src/art/main-game-back-sound.wav");
+        this.gameFrame.setResizable(false);
+//        Sound.playSound("/main-game-back-sound.wav");
+        Sound.main_game_back_sound.loop();
         this.gameFrame.setLocationRelativeTo(null);
         this.gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

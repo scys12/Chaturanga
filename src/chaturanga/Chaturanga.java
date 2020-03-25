@@ -37,8 +37,8 @@ import java.nio.file.Paths;
 public class Chaturanga extends Application{
     private static Font font;
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Platform.setImplicitExit(false);
+    public void start(Stage primaryStage){
+        primaryStage.setResizable(false);
         Pane root = new Pane();
         root.setPrefSize(860,  700);
 
@@ -54,13 +54,7 @@ public class Chaturanga extends Application{
             System.out.println("Couldn't load image");
         }
 
-        MediaPlayer a =new MediaPlayer(new Media(new File("src/art/menu-back-sound.wav").toURI().toString()));
-        a.setOnEndOfMedia(new Runnable() {
-            public void run() {
-                a.seek(Duration.ZERO);
-            }
-        });
-        a.play();
+        Sound.menu_back_sound.loop();
 
         Title title = new Title("C H A T U R A N G A");
         title.setTranslateX(75);
@@ -78,7 +72,7 @@ public class Chaturanga extends Application{
                     mainTable.show();
                 }
             });
-            a.stop();
+            Sound.menu_back_sound.stop();
             primaryStage.hide();
         });
 
@@ -91,7 +85,7 @@ public class Chaturanga extends Application{
                     mainTable.show();
                 }
             });
-            a.stop();
+            Sound.menu_back_sound.stop();
             primaryStage.hide();
         });
 
@@ -162,19 +156,22 @@ public class Chaturanga extends Application{
             getChildren().addAll(bg, text);
 
             setOnMouseEntered(event -> {
-                Sound.playSound("src/art/hover.wav");
+//                Sound.playSound("/hover.wav");
+                Sound.hover.play();
                 bg.setFill(gradient);
                 text.setFill(Color.WHITE);
             });
 
 
             setOnMouseExited(event -> {
+//                Sound.hover.play();
                 bg.setFill(Color.BLACK);
                 text.setFill(Color.DARKGREY);
             });
 
             setOnMousePressed(event -> {
-                Sound.playSound("src/art/clickmenu.wav");
+//                Sound.playSound("/clickmenu.wav");
+                Sound.click.play();
                 bg.setFill(Color.DARKVIOLET);
             });
 

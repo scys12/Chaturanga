@@ -50,7 +50,9 @@ public class MainTable {
             }//create AI and execute it
 
             if (table.getGameBoard().currentPlayer().isInCheckMate()) {
-                Sound.playSound("src/art/win.wav");
+                Sound.main_game_back_sound.stop();
+//                Sound.playSound("/win.wav");
+                Sound.win.play();
                 String win;
                 if (table.getGameBoard().currentPlayer().getOpponent().getAlliance().isBlack()) {
                     menu.show(AI_WIN);
